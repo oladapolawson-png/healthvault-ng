@@ -24,8 +24,8 @@ function pushNotif(phone,message,type="result",from=""){
 function seedDemo(){
   if(DB.get("hvng_seeded")) return;
   const patients=[
-    {phone:"08012345678",name:"Adaeze Okonkwo",dob:"1990-03-15",gender:"F",bloodGroup:"O+",genotype:"AA",nhia:"NHIA/2024/001234",nokName:"Chukwuemeka Okonkwo",nokPhone:"08098765432",nokRelation:"Husband",address:"14 Bode Thomas St, Surulere, Lagos",occupation:"Teacher",allergies:"Penicillin",vaccinations:[{id:1,name:"Yellow Fever",date:"2023-06-01",facility:"LUTH",batchNo:"YF2023A",nextDue:"2033-06-01"},{id:2,name:"Hepatitis B",date:"2022-03-15",facility:"Medicare Clinic",batchNo:"HB22B",nextDue:""},{id:3,name:"Tetanus Toxoid",date:"2024-01-10",facility:"Lagos Island General",batchNo:"TT24C",nextDue:"2029-01-10"}]},
-    {phone:"08023456789",name:"Babatunde Fashola",dob:"1978-07-22",gender:"M",bloodGroup:"A+",genotype:"AS",nhia:"NHIA/2023/005678",nokName:"Kemi Fashola",nokPhone:"08111234567",nokRelation:"Wife",address:"22 Allen Ave, Ikeja, Lagos",occupation:"Civil Servant",allergies:"None known",vaccinations:[{id:1,name:"COVID-19 (AZ)",date:"2022-05-10",facility:"LASUTH",batchNo:"COV22A",nextDue:""}]},
+    {phone:"08012345678",name:"Adaeze Okonkwo",dob:"1990-03-15",gender:"F",bloodGroup:"O+",genotype:"AA",nhia:"NHIA/2024/001234",nokName:"Chukwuemeka Okonkwo",nokPhone:"08098765432",nokRelation:"Husband",address:"14 Bode Thomas St, Surulere, Lagos",occupation:"Teacher",allergies:"Penicillin",hmo:{provider:"Hygeia HMO",plan:"Silver",memberId:"HYG/2024/0089234",employerGroup:"Lagos State Civil Service",expiry:"2025-12-31",dependants:"Chukwuemeka Okonkwo (Spouse)"},vaccinations:[{id:1,name:"Yellow Fever",date:"2023-06-01",facility:"LUTH",batchNo:"YF2023A",nextDue:"2033-06-01"},{id:2,name:"Hepatitis B",date:"2022-03-15",facility:"Medicare Clinic",batchNo:"HB22B",nextDue:""},{id:3,name:"Tetanus Toxoid",date:"2024-01-10",facility:"Lagos Island General",batchNo:"TT24C",nextDue:"2029-01-10"}]},
+    {phone:"08023456789",name:"Babatunde Fashola",dob:"1978-07-22",gender:"M",bloodGroup:"A+",genotype:"AS",nhia:"NHIA/2023/005678",nokName:"Kemi Fashola",nokPhone:"08111234567",nokRelation:"Wife",address:"22 Allen Ave, Ikeja, Lagos",occupation:"Civil Servant",allergies:"None known",hmo:{provider:"Reliance HMO",plan:"Reli-Health Plus",memberId:"REL/2023/0045678",employerGroup:"Federal Civil Service Commission",expiry:"2026-03-31",dependants:"Kemi Fashola (Spouse), Tolu Fashola (Child)"},vaccinations:[{id:1,name:"COVID-19 (AZ)",date:"2022-05-10",facility:"LASUTH",batchNo:"COV22A",nextDue:""}]},
     {phone:"08034567890",name:"Ngozi Eze",dob:"1995-11-08",gender:"F",bloodGroup:"B+",genotype:"AA",nhia:"NHIA/2024/009012",nokName:"Chidi Eze",nokPhone:"08155566778",nokRelation:"Brother",address:"5 Obi St, Enugu",occupation:"Nurse",allergies:"Sulfonamides",vaccinations:[{id:1,name:"Hepatitis B",date:"2021-09-01",facility:"UNTH Enugu",batchNo:"HB21C",nextDue:""}]},
     {phone:"08045678901",name:"Ibrahim Musa",dob:"1965-02-14",gender:"M",bloodGroup:"AB+",genotype:"AA",nhia:"NHIA/2022/003456",nokName:"Hauwa Musa",nokPhone:"08033344556",nokRelation:"Wife",address:"Block 7, Gwarinpa Estate, Abuja",occupation:"Retired",allergies:"Aspirin",vaccinations:[]},
     {phone:"08056789012",name:"Chidinma Okafor",dob:"2001-06-30",gender:"F",bloodGroup:"O-",genotype:"SC",nhia:"NHIA/2025/011234",nokName:"Mrs. Grace Okafor",nokPhone:"08077788990",nokRelation:"Mother",address:"3 University Rd, Nsukka",occupation:"Student",allergies:"None known",vaccinations:[{id:1,name:"Meningitis",date:"2023-08-15",facility:"University Clinic",batchNo:"MEN23D",nextDue:"2028-08-15"}]},
@@ -120,6 +120,96 @@ const CARE={
   PHARMACY: {color:"#0891B2",bg:"#CFFAFE",icon:"💊",label:"Pharmacy", desc:"Prescriptions, dispensing, NAFDAC"},
 };
 const CARE_TYPES=Object.keys(CARE);
+
+// ── Nigerian HMO Data ─────────────────────────────────────────────
+const HMO_PROVIDERS = {
+  "Hygeia HMO": {
+    plans: ["Basic","Bronze","Silver","Gold","Platinum","Executive"],
+    phone: "0700-HYGEIA (0700-494342)",
+    website: "hygeiahmo.com",
+    email: "customercare@hygeiahmo.com",
+    color: "#0047AB",
+  },
+  "Reliance HMO": {
+    plans: ["Reli-Health Basic","Reli-Health Plus","Reli-Health Premium","Reli-Health Executive"],
+    phone: "0700-RELIANCE (0700-7354262)",
+    website: "reliancehmo.com",
+    email: "hello@reliancehmo.com",
+    color: "#E63946",
+  },
+  "AXA Mansard Health": {
+    plans: ["SmartCare","ValueCare","StandardCare","PreferredCare","EliteCare"],
+    phone: "01-279-4100",
+    website: "axamansard.com",
+    email: "health@axamansard.com",
+    color: "#00539C",
+  },
+  "Aiico Multishield": {
+    plans: ["Coral","Sapphire","Emerald","Ruby","Diamond"],
+    phone: "01-279-5000",
+    website: "aiicohmo.com",
+    email: "info@aiicohmo.com",
+    color: "#006400",
+  },
+  "Leadway Health": {
+    plans: ["Bronze","Silver","Gold","Platinum"],
+    phone: "0700-LEADWAY (0700-5323929)",
+    website: "leadwayhealth.com",
+    email: "health@leadway.com",
+    color: "#C8102E",
+  },
+  "Avon HMO": {
+    plans: ["Avon Flexi","Avon Essential","Avon Classic","Avon Premier","Avon Executive"],
+    phone: "01-270-1000",
+    website: "avonhmo.com",
+    email: "info@avonhmo.com",
+    color: "#FF6B00",
+  },
+  "Total Health Trust (THT)": {
+    plans: ["THT Value","THT Essential","THT Classic","THT Premium","THT Diamond"],
+    phone: "01-462-7777",
+    website: "totalhealthtrust.com",
+    email: "info@totalhealthtrust.com",
+    color: "#003087",
+  },
+  "Clearline HMO": {
+    plans: ["Basic","Standard","Premium","Executive"],
+    phone: "0700-CLEARLINE",
+    website: "clearlinehmo.com",
+    email: "info@clearlinehmo.com",
+    color: "#008080",
+  },
+  "Bastion Health": {
+    plans: ["Bronze","Silver","Gold","Platinum"],
+    phone: "01-279-8000",
+    website: "bastionhmo.com",
+    email: "info@bastionhmo.com",
+    color: "#8B0000",
+  },
+  "Marina Medical": {
+    plans: ["Classic","Premium","Executive"],
+    phone: "01-270-5000",
+    website: "marinamedical.com",
+    email: "info@marinamedical.com",
+    color: "#2E4057",
+  },
+  "Integrated Healthcare": {
+    plans: ["Basic","Standard","Enhanced","Premium"],
+    phone: "01-271-3000",
+    website: "integratedhealthcareng.com",
+    email: "info@integratedhealthcareng.com",
+    color: "#4B0082",
+  },
+  "Sterling Health": {
+    plans: ["Bronze","Silver","Gold","Platinum"],
+    phone: "01-279-6000",
+    website: "sterlinghmo.com",
+    email: "info@sterlinghmo.com",
+    color: "#B8860B",
+  },
+};
+const HMO_NAMES = ["-- Select HMO Provider --",...Object.keys(HMO_PROVIDERS)];
+
 const STATUS_OPTS=["Normal","High","Low","Positive","Negative","Pending","Unknown"];
 const STATUS_COLOR={Normal:"#16A34A",High:"#DC2626",Low:"#D97706",Positive:"#DC2626",Negative:"#16A34A",Pending:"#78716C",Unknown:"#A8A29E"};
 
@@ -176,7 +266,7 @@ const QUICK={
 };
 
 // ── Styles ────────────────────────────────────────────────────────
-const G="#14532D",GB="#1D4ED8",GL="#B45309";
+const G="#14532D",GB="#1D4ED8",GL="#B45309",GP="#0891B2",GA="#EAB308";
 const S={
   page:{minHeight:"100vh",background:"#F5F4F0",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#1C1917"},
   card:{background:"#fff",borderRadius:16,padding:"20px 22px",border:"1px solid #EAE8E3",boxShadow:"0 2px 8px rgba(0,0,0,.05),0 0 1px rgba(0,0,0,.06)"},
@@ -201,7 +291,7 @@ export default function App(){
   const [vp,setVp]=useState(null);
   const [phone,setPhone]=useState("");
   const [otp,setOtp]=useState("");
-  const [sub,setSub]=useState("timeline");
+  const [sub,setSub]=useState("dashboard");
   const [toast,setToast]=useState(null);
   const [detail,setDetail]=useState(null);
   const [modal,setModal]=useState(null); // "emergency"|"referral"|"vaccinations"|"maternal"|"vitals"|"notif"
@@ -271,6 +361,7 @@ export default function App(){
             {modal==="vaccinations"&&user&&<VaccinationSheet user={user} setUser={setUser} onClose={()=>setModal(null)} flash={flash}/>}
             {modal==="maternal"&&(user||vp)&&<MaternalDashboard recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} user={user||vp} onClose={()=>setModal(null)}/>}
             {modal==="vitals"&&(user||vp)&&<VitalTrends recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)}/>}
+            {modal==="hmo"&&user&&<HMOCardModal user={user} onClose={()=>setModal(null)} flash={flash} onSave={(hmo)=>{const users=DB.get("hvng_users")||[];const updated=users.map(u=>u.phone===user.phone?{...u,hmo}:u);DB.set("hvng_users",updated);setUser({...user,hmo});setModal(null);}}/>}
             {modal==="summary"&&(user||vp)&&<AISummaryModal patient={user||vp} recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)} flash={flash}/>}
           </div>
         </div>
@@ -553,9 +644,8 @@ MDCN: ${doc?.mdcn||"N/A"}`;
 
   const print=()=>{
     if(!reason.trim()) return flash("Please add the reason for referral","err");
-    const w=window.open("","_blank");
-    w.document.write(`<html><head><title>Referral — ${pt.name}</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>${letterText}</pre></body></html>`);
-    w.document.close();w.print();
+    const _blob=new Blob([`<html><head><title>Referral — ${pt.name}</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>${letterText}</pre></body></html>`);
+    w.document.close();w.print(],{type:"text/html"});const _url=URL.createObjectURL(_blob);const _a=document.createElement("a");_a.href=_url;_a.download="Referral-"+pt.name.replace(/[^a-zA-Z]/g,"-")+".html";document.body.appendChild(_a);_a.click();setTimeout(()=>{document.body.removeChild(_a);URL.revokeObjectURL(_url);},2000);
   };
 
   return(<Sheet onClose={onClose} title="📋 Referral Letter">
@@ -798,7 +888,7 @@ function AISummaryModal({patient,recs,onClose,flash}){
           <div style={{textAlign:"center",padding:"24px 0"}}>
             <div style={{fontSize:40,marginBottom:12}}>✨</div>
             <div style={{fontSize:14,color:"#57534E",lineHeight:1.7,marginBottom:20}}>Generate an intelligent clinical summary covering all episodes, medications, labs and alerts - formatted for WhatsApp sharing.</div>
-            <button style={{...S.btnG,maxWidth:300,margin:"0 auto"}} onClick={generate}>Generate AI Summary</button>
+            <button style={{...S.btnG,maxWidth:300,margin:"0 auto"}} onClick={generate}>Create My Health Summary</button>
           </div>
         )}
         {loading&&(
@@ -879,46 +969,232 @@ function TandCModal({onAccept,onDecline}){
 }
 
 
+// ── HMO CARD MODAL ────────────────────────────────────────────────
+function HMOCardModal({user,onClose,onSave,flash}){
+  const existing = user.hmo||{};
+  const [provider,setProvider] = useState(existing.provider||"");
+  const [plan,setPlan] = useState(existing.plan||"");
+  const [memberId,setMemberId] = useState(existing.memberId||"");
+  const [employerGroup,setEmployerGroup] = useState(existing.employerGroup||"");
+  const [expiry,setExpiry] = useState(existing.expiry||"");
+  const [dependants,setDependants] = useState(existing.dependants||"");
+  const [editing,setEditing] = useState(!existing.provider);
+  const [sharing,setSharing] = useState(false);
+
+  const hmoInfo = HMO_PROVIDERS[provider]||null;
+  const plans = hmoInfo?.plans||[];
+
+  const handleProviderChange = (val)=>{
+    setProvider(val);
+    setPlan("");
+  };
+
+  const save = ()=>{
+    if(!provider||provider==="-- Select HMO Provider --") return flash("Please select your HMO provider","err");
+    if(!memberId.trim()) return flash("Please enter your Member ID","err");
+    const hmo = {provider,plan,memberId,employerGroup,expiry,dependants};
+    onSave(hmo);
+    setEditing(false);
+    flash("HMO card saved!");
+  };
+
+  const shareCard = ()=>{
+    const text = "HMO CARD - HealthVault NG\n\nPatient: "+user.name+"\nHMO Provider: "+provider+"\nPlan: "+plan+"\nMember ID: "+memberId+"\nEmployer/Group: "+(employerGroup||"N/A")+"\nExpiry: "+(expiry||"N/A")+"\nDependants: "+(dependants||"None listed")+"\n\nNHIA No: "+(user.nhia||"N/A")+"\nBlood Group: "+user.bloodGroup+" | Genotype: "+user.genotype+"\n\nShared via HealthVault NG";
+    if(navigator.share){navigator.share({title:"HMO Card — "+user.name,text}).catch(()=>{});}
+    else{navigator.clipboard.writeText(text).then(()=>flash("HMO card details copied — paste into WhatsApp!","info")).catch(()=>{});}
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:700,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"92vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 18px"}}/>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700}}>My HMO Card</div>
+          {!editing&&provider&&<button onClick={()=>setEditing(true)} style={{background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>Edit</button>}
+        </div>
+
+        {/* Card Display (when not editing) */}
+        {!editing&&provider&&(<>
+          <div style={{background:hmoInfo?.color||G,borderRadius:18,padding:"22px 22px 18px",marginBottom:16,color:"#fff",position:"relative",overflow:"hidden",boxShadow:"0 8px 32px rgba(0,0,0,.2)"}}>
+            <div style={{position:"absolute",top:-30,right:-30,width:120,height:120,borderRadius:"50%",background:"rgba(255,255,255,.08)"}}/>
+            <div style={{position:"absolute",bottom:-20,left:-20,width:80,height:80,borderRadius:"50%",background:"rgba(255,255,255,.06)"}}/>
+            <div style={{position:"relative",zIndex:1}}>
+              <div style={{fontSize:10,opacity:.7,letterSpacing:1.5,textTransform:"uppercase",marginBottom:2}}>Health Insurance</div>
+              <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:900,marginBottom:14}}>{provider}</div>
+              <div style={{fontSize:16,fontWeight:700,marginBottom:4}}>{user.name}</div>
+              <div style={{fontSize:11,opacity:.8,marginBottom:14}}>NHIA: {user.nhia||"N/A"}</div>
+              <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+                <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Member ID</div><div style={{fontSize:15,fontWeight:800,letterSpacing:1,marginTop:2}}>{memberId}</div></div>
+                <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Plan</div><div style={{fontSize:13,fontWeight:700,marginTop:2}}>{plan||"—"}</div></div>
+                {expiry&&<div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Valid Until</div><div style={{fontSize:13,fontWeight:700,marginTop:2}}>{expiry}</div></div>}
+              </div>
+              {employerGroup&&<div style={{marginTop:12,fontSize:11,opacity:.75}}>Group: {employerGroup}</div>}
+            </div>
+          </div>
+
+          {/* Provider contact info */}
+          {hmoInfo&&<div style={{...S.card,marginBottom:14,background:"#F9F7F4"}}>
+            <div style={{fontWeight:700,fontSize:12,marginBottom:8,color:"#57534E"}}>Provider Contact</div>
+            <div style={{fontSize:12,color:"#57534E",lineHeight:2}}>
+              📞 {hmoInfo.phone}<br/>
+              🌐 {hmoInfo.website}<br/>
+              ✉️ {hmoInfo.email}
+            </div>
+          </div>}
+
+          {/* Dependants */}
+          {dependants&&<div style={{...S.card,marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:12,marginBottom:4}}>👨‍👩‍👧 Dependants Covered</div>
+            <div style={{fontSize:13,color:"#57534E"}}>{dependants}</div>
+          </div>}
+
+          <button onClick={shareCard} style={{...S.btnG,marginBottom:10}}>📤 Share HMO Details</button>
+          <button onClick={onClose} style={{width:"100%",padding:12,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:600,fontSize:14}}>Close</button>
+        </>)}
+
+        {/* Edit / Add Form */}
+        {editing&&(<>
+          <div style={{...S.card,marginBottom:14,background:"#EFF6FF",border:"1px solid #BFDBFE",fontSize:12,color:"#1E40AF",lineHeight:1.7}}>
+            💡 Select your HMO provider and most details will fill in automatically. Just add your Member ID from your physical HMO card.
+          </div>
+
+          <Fl label="HMO Provider *">
+            <select style={S.inp} value={provider} onChange={e=>handleProviderChange(e.target.value)}>
+              {HMO_NAMES.map(n=><option key={n} value={n==="-- Select HMO Provider --"?"":n}>{n}</option>)}
+            </select>
+          </Fl>
+
+          {provider&&hmoInfo&&(<>
+            {/* Auto-populated provider card preview */}
+            <div style={{background:hmoInfo.color,borderRadius:14,padding:"14px 16px",marginBottom:14,color:"#fff"}}>
+              <div style={{fontSize:10,opacity:.7,letterSpacing:1,textTransform:"uppercase"}}>Selected Provider</div>
+              <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:800,marginTop:2,marginBottom:8}}>{provider}</div>
+              <div style={{display:"flex",gap:14,fontSize:11,opacity:.85,flexWrap:"wrap"}}>
+                <span>📞 {hmoInfo.phone}</span>
+                <span>🌐 {hmoInfo.website}</span>
+              </div>
+            </div>
+
+            <Fl label="Plan / Package">
+              <select style={S.inp} value={plan} onChange={e=>setPlan(e.target.value)}>
+                <option value="">-- Select your plan --</option>
+                {plans.map(p=><option key={p} value={p}>{p}</option>)}
+              </select>
+            </Fl>
+
+            <Fl label="Member ID / Card Number *">
+              <input style={S.inp} placeholder="e.g. HYG/2024/0089234" value={memberId} onChange={e=>setMemberId(e.target.value)} maxLength={40}/>
+            </Fl>
+
+            <Fl label="Employer / Group (if employer-based HMO)">
+              <input style={S.inp} placeholder="e.g. Lagos State Civil Service, Dangote Group" value={employerGroup} onChange={e=>setEmployerGroup(e.target.value)} maxLength={80}/>
+            </Fl>
+
+            <Fl label="Expiry Date">
+              <input type="date" style={S.inp} value={expiry} onChange={e=>setExpiry(e.target.value)}/>
+            </Fl>
+
+            <Fl label="Dependants Covered">
+              <input style={S.inp} placeholder="e.g. Kemi Fashola (Spouse), Tolu Fashola (Child)" value={dependants} onChange={e=>setDependants(e.target.value)} maxLength={200}/>
+            </Fl>
+
+            <button style={{...S.btnG,marginTop:6}} onClick={save}>Save HMO Card</button>
+          </>)}
+
+          {!provider&&<div style={{textAlign:"center",padding:"20px",color:"#A8A29E",fontSize:13}}>Select a provider above to continue</div>}
+
+          <button onClick={onClose} style={{width:"100%",padding:12,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:600,fontSize:14,marginTop:10}}>Cancel</button>
+        </>)}
+      </div>
+    </div>
+  );
+}
+
+
 // ── LANDING ───────────────────────────────────────────────────────
 function Landing({ctx}){
   return(
-    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column"}}>
-      <div style={{background:"linear-gradient(160deg,#0A3320 0%,#14532D 55%,#166534 100%)",padding:"52px 24px 44px",textAlign:"center",color:"#fff",position:"relative",overflow:"hidden"}}>
+    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF7",fontFamily:"'DM Sans',system-ui,sans-serif"}}>
+      {/* Hero */}
+      <div style={{background:"linear-gradient(160deg,#0A3320 0%,#14532D 60%,#1a5c35 100%)",padding:"52px 24px 44px",textAlign:"center",color:"#fff",position:"relative",overflow:"hidden"}}>
         <div style={{position:"absolute",top:-60,right:-60,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.04)"}}/>
-        <div style={{position:"absolute",bottom:-40,left:-40,width:180,height:180,borderRadius:"50%",background:"rgba(255,255,255,.03)"}}/>
+        <div style={{position:"absolute",bottom:-40,left:-40,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,.03)"}}/>
+        <div style={{position:"absolute",top:30,left:20,width:60,height:60,borderRadius:"50%",background:"rgba(234,179,8,.08)"}}/>
         <div style={{position:"relative",zIndex:1}}>
-          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:46,fontWeight:900,lineHeight:1.05,marginBottom:14,letterSpacing:-1}}>HealthVault<br/><span style={{color:"#86EFAC"}}>NG</span></div>
-          <div style={{fontSize:15,opacity:.8,maxWidth:320,margin:"0 auto 24px",lineHeight:1.75}}>Secure health records shared seamlessly between patients, doctors and labs.</div>
+          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(234,179,8,.15)",border:"1px solid rgba(234,179,8,.3)",borderRadius:99,padding:"5px 14px",marginBottom:20}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:"#EAB308"}}/>
+            <span style={{fontSize:11,fontWeight:700,color:"#FEF08A",letterSpacing:1}}>YOUR HEALTH STORY, ALWAYS WITH YOU</span>
+          </div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:48,fontWeight:900,lineHeight:1.05,marginBottom:12,letterSpacing:-1}}>Health<span style={{color:"#EAB308"}}>Vault</span><br/><span style={{color:"#86EFAC"}}>NG</span></div>
+          <div style={{fontSize:15,opacity:.85,maxWidth:300,margin:"0 auto 24px",lineHeight:1.8,fontWeight:400}}>
+            Your health story, always with you.<br/>Share with any doctor, anywhere in Nigeria.
+          </div>
           <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-            {Object.values(CARE).map(c=><div key={c.label} style={{background:"rgba(255,255,255,.12)",color:"rgba(255,255,255,.9)",fontSize:12,fontWeight:600,padding:"5px 13px",borderRadius:99,border:"1px solid rgba(255,255,255,.15)"}}>{c.icon} {c.label}</div>)}
+            {Object.values(CARE).map(c=><div key={c.label} style={{background:"rgba(255,255,255,.1)",color:"rgba(255,255,255,.85)",fontSize:11,fontWeight:600,padding:"5px 13px",borderRadius:99,border:"1px solid rgba(255,255,255,.12)"}}>{c.icon} {c.label}</div>)}
           </div>
         </div>
       </div>
-      <div style={{flex:1,padding:"24px 20px 36px",maxWidth:480,margin:"0 auto",width:"100%"}}>
-        <div style={{fontSize:11,fontWeight:700,color:"#A8A29E",letterSpacing:1.5,textAlign:"center",marginBottom:18}}>SELECT YOUR PORTAL</div>
+
+      {/* Portal cards */}
+      <div style={{flex:1,padding:"24px 18px 36px",maxWidth:480,margin:"0 auto",width:"100%"}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#A8A29E",letterSpacing:1.5,textAlign:"center",marginBottom:18,textTransform:"uppercase"}}>Who are you?</div>
         {[
-          {icon:"👤",title:"Patient Portal",sub:"My Health Folder",desc:"View records, upload documents, share with your doctor — all from your phone.",color:G,gradient:"linear-gradient(135deg,#14532D,#16A34A)",action:()=>ctx.go("pt-login"),cta:"Login with phone number →"},
-          {icon:"🩺",title:"Clinician Portal",sub:"Doctor Dashboard",desc:"Register with your MDCN number, access patient records, and document consultations.",color:GB,gradient:"linear-gradient(135deg,#1D4ED8,#3B82F6)",action:()=>ctx.go("dr-login"),cta:"Clinician login →"},
-          {icon:"🔬",title:"Lab Portal",sub:"Laboratory Dashboard",desc:"Post structured test results directly to patient records with AI-assisted data entry.",color:GL,gradient:"linear-gradient(135deg,#B45309,#D97706)",action:()=>ctx.go("lab-login"),cta:"Lab login →"},
+          {
+            icon:"👤",title:"I am a Patient",sub:"Your health story",
+            desc:"See your full health history, medications and test results — all in one place.",
+            color:G,gradient:"linear-gradient(135deg,#14532D,#16A34A)",
+            action:()=>ctx.go("pt-login"),cta:"Open my health folder →"
+          },
+          {
+            icon:"🩺",title:"I am a Doctor",sub:"Clinician Dashboard",
+            desc:"Access your patients' records, write visit notes and generate referral letters.",
+            color:GB,gradient:"linear-gradient(135deg,#1D4ED8,#3B82F6)",
+            action:()=>ctx.go("dr-login"),cta:"Go to clinician portal →"
+          },
+          {
+            icon:"🔬",title:"I am a Lab",sub:"Laboratory Dashboard",
+            desc:"Post test results directly into patient records. Fast, paperless and accurate.",
+            color:GL,gradient:"linear-gradient(135deg,#B45309,#D97706)",
+            action:()=>ctx.go("lab-login"),cta:"Go to lab portal →"
+          },
         ].map(item=>(
-          <div key={item.title} style={{...S.card,cursor:"pointer",marginBottom:14,padding:0,overflow:"hidden"}} onClick={item.action}>
-            <div style={{background:item.gradient,padding:"16px 20px 14px",display:"flex",alignItems:"center",gap:14}}>
-              <div style={{width:44,height:44,borderRadius:12,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flex:"none"}}>{item.icon}</div>
-              <div><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:"#fff"}}>{item.title}</div><div style={{fontSize:11,color:"rgba(255,255,255,.7)",fontWeight:600,marginTop:1}}>{item.sub}</div></div>
+          <div key={item.title} style={{background:"#fff",borderRadius:18,cursor:"pointer",marginBottom:14,overflow:"hidden",boxShadow:"0 2px 16px rgba(0,0,0,.06)",border:"1px solid #F0EDE8",transition:"transform .1s"}} onClick={item.action}>
+            <div style={{background:item.gradient,padding:"18px 20px 16px",display:"flex",alignItems:"center",gap:14}}>
+              <div style={{width:46,height:46,borderRadius:13,background:"rgba(255,255,255,.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flex:"none"}}>{item.icon}</div>
+              <div>
+                <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:19,fontWeight:700,color:"#fff",lineHeight:1.1}}>{item.title}</div>
+                <div style={{fontSize:11,color:"rgba(255,255,255,.65)",fontWeight:600,marginTop:3,letterSpacing:.3}}>{item.sub}</div>
+              </div>
             </div>
-            <div style={{padding:"14px 20px 8px",fontSize:13,color:"#57534E",lineHeight:1.65}}>{item.desc}</div>
+            <div style={{padding:"13px 20px 6px",fontSize:13,color:"#57534E",lineHeight:1.7}}>{item.desc}</div>
             <div style={{padding:"4px 20px 16px",color:item.color,fontSize:13,fontWeight:700}}>{item.cta}</div>
           </div>
         ))}
-        <div style={{padding:"12px 20px",background:"#fff",borderRadius:14,border:"1px solid #EAE8E3",display:"flex",justifyContent:"space-around",textAlign:"center"}}>
-          {[["🔒","Offline-first"],["📱","Any phone"],["🔐","Secure"]].map(([icon,label])=>(
-            <div key={label}><div style={{fontSize:18}}>{icon}</div><div style={{fontSize:10,color:"#78716C",fontWeight:600,marginTop:3}}>{label}</div></div>
+
+        {/* Trust bar - short and visual, not wordy */}
+        <div style={{background:"#fff",borderRadius:16,border:"1px solid #EAE8E3",padding:"14px 20px",display:"flex",justifyContent:"space-around",textAlign:"center"}}>
+          {[
+            {icon:"🔒",label:"Private"},
+            {icon:"📵",label:"No adverts"},
+            {icon:"📱",label:"Works offline"},
+            {icon:"🔗",label:"You control access"},
+          ].map(({icon,label})=>(
+            <div key={label} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+              <div style={{fontSize:20}}>{icon}</div>
+              <div style={{fontSize:10,color:"#78716C",fontWeight:600}}>{label}</div>
+            </div>
           ))}
+        </div>
+
+        <div style={{textAlign:"center",marginTop:18,fontSize:11,color:"#A8A29E",lineHeight:1.8}}>
+          Built for Nigeria · Compliant with NDPA 2023<br/>
+          Your data stays on your device
         </div>
       </div>
     </div>
   );
 }
+
 
 // ── PATIENT AUTH ──────────────────────────────────────────────────
 function PtLogin({ctx}){
@@ -928,7 +1204,7 @@ function PtLogin({ctx}){
     setBusy(true);
     setTimeout(()=>{setBusy(false);const c=genOTP();ctx.setOtp(c);ctx.setPhone(ph.trim());ctx.flash(`Demo OTP: ${c}`,"info",8000);ctx.go("pt-otp");},900);
   };
-  return(<Centered><PageTitle title="My Health Folder" sub="Enter your phone number to continue"/>
+  return(<Centered><PageTitle title="My Health Folder" sub="Enter your phone number to open your health folder"/>
     <div style={S.card}>
       <label style={S.lbl}>Phone Number</label>
       <div style={{display:"flex",gap:8,marginBottom:18}}>
@@ -947,7 +1223,7 @@ function PtOTP({ctx}){
   const verify=()=>{
     if(val!==ctx.otp){setErr("Incorrect OTP");return;}
     const u=(DB.get("hvng_users")||[]).find(u=>u.phone===ctx.phone);
-    if(u){ctx.setUser(u);ctx.flash(`Welcome back, ${u.name.split(" ")[0]}!`);ctx.go("pt-app","timeline");}
+    if(u){ctx.setUser(u);ctx.flash(`Welcome back, ${u.name.split(" ")[0]}!`);ctx.go("pt-app","dashboard");}
     else ctx.go("pt-register");
   };
   return(<Centered><PageTitle title="Enter OTP" sub={`Sent to +234 ${ctx.phone}`}/>
@@ -955,7 +1231,7 @@ function PtOTP({ctx}){
       <label style={S.lbl}>6-Digit Code</label>
       <input style={{...S.inp,fontSize:28,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={val} onChange={e=>{setVal(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&verify()}/>
       {err&&<div style={{color:"#DC2626",fontSize:13,marginTop:8}}>{err}</div>}
-      <button style={{...S.btnG,marginTop:18}} onClick={verify}>VERIFY</button>
+      <button style={{...S.btnG,marginTop:18}} onClick={verify}>Confirm Code</button>
     </div><Back onClick={()=>ctx.go("pt-login")}/></Centered>);
 }
 
@@ -969,10 +1245,11 @@ function PtRegister({ctx}){
     setShowTandC(true);
   };
   const doRegister=()=>{
-    const nu={...f,phone:ctx.phone,vaccinations:[]};
+    const hmo=f.hmoProvider&&f.hmoMemberId?{provider:f.hmoProvider,plan:f.hmoPlan||"",memberId:f.hmoMemberId,employerGroup:f.hmoEmployer||"",expiry:"",dependants:""}:null;
+    const nu={...f,phone:ctx.phone,vaccinations:[],hmo};
     DB.set("hvng_users",[...(DB.get("hvng_users")||[]),nu]);
     DB.set(`hvng_records_${ctx.phone}`,[]);
-    ctx.setUser(nu);ctx.flash("Welcome, "+f.name.split(" ")[0]+"!");ctx.go("pt-app","timeline");
+    ctx.setUser(nu);ctx.flash("Welcome, "+f.name.split(" ")[0]+"!");ctx.go("pt-app","dashboard");
   };
   return(<div style={{maxWidth:480,margin:"0 auto",padding:"0 20px 60px"}}>
     <PageTitle title="Create Your Profile" sub="Complete all sections to get started"/>
@@ -1000,7 +1277,39 @@ function PtRegister({ctx}){
       <div style={{background:"#FEF3C7",border:"1.5px solid #FCD34D",borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:12,color:"#92400E"}}>
         ⚠️ Next of kin information is required for emergency situations and is shown on your Emergency Card.
       </div>
-      <button style={{...S.btnG,marginTop:4}} onClick={submit}>Create Account</button>
+      </div>
+
+      {/* HMO Section */}
+      <div style={{...S.card,marginBottom:14}}>
+        <div style={{fontWeight:700,fontSize:14,marginBottom:4,color:G}}>🏥 Health Insurance (Optional)</div>
+        <div style={{fontSize:12,color:"#78716C",marginBottom:12,lineHeight:1.6}}>Add your HMO details now to speed up hospital registration. You can add this later too.</div>
+        <Fl label="HMO Provider">
+          <select style={S.inp} value={f.hmoProvider||""} onChange={e=>setF(p=>({...p,hmoProvider:e.target.value,hmoPlan:""}))}>
+            {HMO_NAMES.map(n=><option key={n} value={n==="-- Select HMO Provider --"?"":n}>{n}</option>)}
+          </select>
+        </Fl>
+        {f.hmoProvider&&HMO_PROVIDERS[f.hmoProvider]&&(<>
+          <div style={{background:HMO_PROVIDERS[f.hmoProvider].color,borderRadius:10,padding:"10px 14px",color:"#fff",fontSize:12,marginBottom:12}}>
+            <div style={{fontWeight:700}}>{f.hmoProvider}</div>
+            <div style={{opacity:.8,marginTop:2}}>📞 {HMO_PROVIDERS[f.hmoProvider].phone}</div>
+          </div>
+          <Fl label="Plan / Package">
+            <select style={S.inp} value={f.hmoPlan||""} onChange={e=>setF(p=>({...p,hmoPlan:e.target.value}))}>
+              <option value="">-- Select your plan --</option>
+              {HMO_PROVIDERS[f.hmoProvider].plans.map(p=><option key={p} value={p}>{p}</option>)}
+            </select>
+          </Fl>
+          <Fl label="Member ID / Card Number">
+            <input style={S.inp} placeholder="e.g. HYG/2024/0089234" value={f.hmoMemberId||""} onChange={e=>setF(p=>({...p,hmoMemberId:e.target.value}))} maxLength={40}/>
+          </Fl>
+          <Fl label="Employer / Group">
+            <input style={S.inp} placeholder="e.g. Lagos State Civil Service" value={f.hmoEmployer||""} onChange={e=>setF(p=>({...p,hmoEmployer:e.target.value}))} maxLength={80}/>
+          </Fl>
+        </>)}
+      </div>
+
+      <div style={{display:"none"}}><!-- placeholder --></div>
+      <button style={{...S.btnG,marginTop:4}} onClick={submit}>Create My Health Folder</button>
     </div>
     <Back onClick={()=>ctx.go("pt-login")}/>
   </div>);
@@ -1012,48 +1321,286 @@ function PtApp({ctx}){
   const notifs=DB.get(`hvng_notif_${u?.phone}`)||[];
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const hasMaternity=allRecs.some(r=>r.careType==="MATERNITY");
-  const TABS=[{id:"timeline",icon:"📋",label:"Records"},{id:"history",icon:"📂",label:"History"},{id:"new",icon:"✚",label:"Add New"},{id:"access",icon:"🔐",label:"Access"}];
-  const PAGES={timeline:<Timeline ctx={ctx}/>,history:<FullHistory recs={allRecs}/>,new:<AddRecord ctx={ctx} isDr={false}/>,access:<AccessManager ctx={ctx}/>};
-  const showSummary = ctx.modal==="summary";
+  const TABS=[{id:"dashboard",icon:"🏠",label:"Dashboard"},{id:"history",icon:"📋",label:"History"},{id:"documents",icon:"📄",label:"Documents"},{id:"access",icon:"🔐",label:"Share"}];
+  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={S.topBar(G)}>
         <div style={{width:36,height:36,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flex:"none"}}>{u?.name?.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
-        <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>{u?.bloodGroup} · {u?.genotype}</div></div>
-        <div style={{display:"flex",gap:6,alignItems:"center"}}>
-          <div title="Patient Summary" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("summary")}>📊</div>
-          <div title="Vital Trends" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("vitals")}>📈</div>
-          {hasMaternity&&<div title="Maternal Dashboard" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("maternal")}>🤱</div>}
-          <div title="Vaccinations" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("vaccinations")}>💉</div>
+        <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>My Health Folder</div></div>
+        <div style={{display:"flex",gap:8,alignItems:"center"}}>
+          <div title="AI Summary" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("summary")}>📊</div>
           <div title="Emergency Card" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("emergency")}>🆘</div>
           <div style={{position:"relative",cursor:"pointer"}} onClick={()=>ctx.setModal("notif")}>
             <span style={{fontSize:20}}>🔔</span>
             {unread>0&&<div style={{position:"absolute",top:-2,right:-2,background:"#DC2626",color:"#fff",fontSize:9,fontWeight:700,width:15,height:15,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center"}}>{unread}</div>}
           </div>
-          <span style={{fontSize:12,cursor:"pointer",opacity:.8,marginLeft:2}} onClick={()=>{ctx.setUser(null);ctx.go("landing");}}>Out</span>
+          <span style={{fontSize:12,cursor:"pointer",opacity:.8}} onClick={()=>{ctx.setUser(null);ctx.go("landing");}}>Out</span>
         </div>
       </div>
-      <div style={{flex:1,overflowY:"auto",padding:"16px 14px 90px"}}>{PAGES[ctx.sub]??PAGES.timeline}</div>
+      <div style={{flex:1,overflowY:"auto",padding:"16px 14px 90px"}}>{PAGES[ctx.sub]??PAGES.dashboard}</div>
       <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1.5px solid #F0EDE8",display:"flex",zIndex:50,boxShadow:"0 -4px 20px rgba(0,0,0,.06)"}}>
-        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderTop:ctx.sub===t.id?`3px solid ${G}`:"3px solid transparent"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:t.id==="new"?22:18}}>{t.icon}</div><div style={{fontSize:10,color:ctx.sub===t.id?G:"#78716C",fontWeight:ctx.sub===t.id?700:400,marginTop:1}}>{t.label}</div></div>)}
+        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderTop:ctx.sub===t.id?"3px solid "+G:"3px solid transparent"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:18}}>{t.icon}</div><div style={{fontSize:10,color:ctx.sub===t.id?G:"#78716C",fontWeight:ctx.sub===t.id?700:400,marginTop:1}}>{t.label}</div></div>)}
       </div>
     </div>
   );
 }
 
-function Timeline({ctx}){
-  const [filter,setFilter]=useState("ALL");
-  const all=(DB.get(`hvng_records_${ctx.user?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  const recs=filter==="ALL"?all:all.filter(r=>r.careType===filter);
+// ── PATIENT DASHBOARD ─────────────────────────────────────────────
+function PatientDashboard({ctx,recs}){
+  const u=ctx.user;
+  const age=Math.floor((Date.now()-new Date(u.dob))/(365.25*24*60*60*1000));
+  const chronic=[...new Set(recs.filter(r=>r.careType==="CHRONIC"||r.fields?.condition).map(r=>r.fields?.condition||r.fields?.diagnosis).filter(Boolean))].slice(0,4);
+  const isPregnant=recs.some(r=>r.careType==="MATERNITY"&&new Date(r.date)>new Date(Date.now()-280*24*60*60*1000));
+  const latestBP=recs.find(r=>r.fields?.bp)?.fields?.bp;
+  const latestWeight=recs.find(r=>r.fields?.weight)?.fields?.weight;
+  const meds=recs.filter(r=>r.careType==="PHARMACY"&&r.fields?.genericName).slice(0,5);
+  const labRecs=recs.filter(r=>r.careType==="LAB").slice(0,4);
+  const visits=recs.filter(r=>r.careType!=="PHARMACY"&&r.careType!=="LAB").slice(0,4);
+
+  const alerts=[];
+  if(u.allergies&&u.allergies!=="None known") alerts.push({icon:"⚠️",label:"Drug Allergy",value:u.allergies,color:"#DC2626",bg:"#FEF2F2"});
+  if(chronic.some(c=>/hypertension|htn/i.test(c))) alerts.push({icon:"❤️",label:"Hypertension",value:"Monitor BP regularly",color:"#B45309",bg:"#FFFBEB"});
+  if(chronic.some(c=>/diabet/i.test(c))) alerts.push({icon:"🩸",label:"Diabetes",value:"Monitor blood sugar daily",color:"#B45309",bg:"#FFFBEB"});
+  if(chronic.some(c=>/sickle/i.test(c))) alerts.push({icon:"🔴",label:"Sickle Cell Disease",value:"Stay hydrated, avoid cold",color:"#DC2626",bg:"#FEF2F2"});
+  if(isPregnant) alerts.push({icon:"🤱",label:"Pregnancy",value:"Keep your ANC appointments",color:"#7C3AED",bg:"#F5F3FF"});
+
+  const simplifyLab=(r)=>{
+    const f=r.fields||{};
+    const status=f.resultStatus||"";
+    const sc=STATUS_COLOR[status]||"#78716C";
+    let plain=r.title||f.testCategory||"Lab Test";
+    if(/sugar|hba1c/i.test(f.testCategory||"")) plain="Blood Sugar";
+    else if(/malaria/i.test(f.testCategory||"")) plain="Malaria Test";
+    else if(/fbc|full blood/i.test(f.testCategory||"")) plain="Full Blood Count";
+    else if(/urin/i.test(f.testCategory||"")) plain="Urine Test";
+    else if(/lipid/i.test(f.testCategory||"")) plain="Cholesterol Check";
+    else if(/typhoid/i.test(f.testCategory||"")) plain="Typhoid Test";
+    else if(/faecal|stool/i.test(f.testCategory||"")) plain="Stool Test";
+    const plainStatus=status==="High"?"Above normal range":status==="Low"?"Below normal range":status==="Positive"?"Positive result":status==="Negative"?"No infection found":status==="Abnormal"?"Needs attention":status==="Normal"?"All clear":"";
+    return{plain,status,plainStatus,sc};
+  };
+
   return(<div>
-    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
-      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G}}>My Health Record</div>
-      <button style={{...S.sm("g"),padding:"7px 13px"}} onClick={()=>ctx.setSub("new")}>+ Add New</button>
+    <div style={{background:"linear-gradient(135deg,#0A3320,#14532D)",borderRadius:18,padding:"18px 20px",marginBottom:14,color:"#fff",position:"relative",overflow:"hidden"}}>
+      <div style={{position:"absolute",top:-20,right:-20,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,.05)"}}/>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>{u.name}</div>
+      <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:10}}>
+        {[["Age",age+" yrs"],["Blood Group",u.bloodGroup],["Genotype",u.genotype]].map(([l,v])=>(
+          <div key={l}><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>{l}</div><div style={{fontSize:14,fontWeight:700,marginTop:1}}>{v}</div></div>
+        ))}
+      </div>
+      <div style={{background:"rgba(255,255,255,.1)",borderRadius:10,padding:"7px 12px",fontSize:12}}>
+        <span style={{opacity:.7,fontSize:10,textTransform:"uppercase",letterSpacing:.8}}>NHIA: </span>
+        <span style={{fontWeight:600}}>{u.nhia||"Not registered"}</span>
+      </div>
+      {(latestBP||latestWeight)&&<div style={{display:"flex",gap:8,marginTop:10}}>
+        {latestBP&&<div style={{background:"rgba(255,255,255,.12)",borderRadius:9,padding:"7px 12px",flex:1,textAlign:"center"}}><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Last BP</div><div style={{fontSize:16,fontWeight:800,marginTop:2}}>{latestBP}</div></div>}
+        {latestWeight&&<div style={{background:"rgba(255,255,255,.12)",borderRadius:9,padding:"7px 12px",flex:1,textAlign:"center"}}><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Weight</div><div style={{fontSize:16,fontWeight:800,marginTop:2}}>{latestWeight} kg</div></div>}
+      </div>}
     </div>
-    <FilterPills filter={filter} setFilter={setFilter}/>
-    {!recs.length&&<Empty msg={filter==="ALL"?"No records yet.":"No records in this category."}/>}
-    <RecordList recs={recs} onOpen={r=>ctx.setDetail(r)}/>
+
+    {alerts.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontSize:12,fontWeight:700,color:"#DC2626",marginBottom:8}}>🚨 Important Alerts</div>
+      {alerts.map((a,i)=>(<div key={i} style={{background:a.bg,borderLeft:"4px solid "+a.color,borderRadius:"0 12px 12px 0",padding:"10px 14px",display:"flex",gap:12,alignItems:"center",marginBottom:6}}>
+        <span style={{fontSize:20,flex:"none"}}>{a.icon}</span>
+        <div><div style={{fontWeight:700,fontSize:13,color:a.color}}>{a.label}</div><div style={{fontSize:12,color:"#57534E",marginTop:1}}>{a.value}</div></div>
+      </div>))}
+    </div>}
+
+    {chronic.length>0&&<div style={{...S.card,marginBottom:14,background:"#F0FDF4",border:"1.5px solid #BBF7D0"}}>
+      <div style={{fontWeight:700,fontSize:13,color:G,marginBottom:8}}>My Conditions</div>
+      {chronic.map((c,i)=><div key={i} style={{display:"flex",alignItems:"center",gap:8,fontSize:13,marginBottom:i<chronic.length-1?5:0}}><div style={{width:8,height:8,borderRadius:"50%",background:G,flex:"none"}}/>{c}</div>)}
+    </div>}
+
+    {meds.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontSize:13,fontWeight:700,color:G,marginBottom:8}}>💊 My Medications</div>
+      {meds.map((r,i)=>{const f=r.fields||{};return(<div key={i} style={{...S.card,display:"flex",gap:10,marginBottom:8,alignItems:"flex-start"}}>
+        <div style={{width:38,height:38,borderRadius:9,background:"#CFFAFE",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flex:"none"}}>💊</div>
+        <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14}}>{f.genericName}</div>
+          {f.brandName&&f.brandName!==f.genericName&&<div style={{fontSize:11,color:"#78716C"}}>Brand: {f.brandName}</div>}
+          <div style={{fontSize:13,color:"#0891B2",fontWeight:600}}>{f.dose} · {f.frequency}</div>
+          {f.indication&&<div style={{fontSize:11,color:"#78716C"}}>For: {f.indication}</div>}
+          {f.notes&&<div style={{fontSize:11,color:"#57534E",marginTop:3,background:"#F0FDFA",padding:"4px 8px",borderRadius:6}}>{f.notes}</div>}
+        </div>
+      </div>);})}
+    </div>}
+
+    {labRecs.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontSize:13,fontWeight:700,color:G,marginBottom:8}}>🔬 Recent Test Results</div>
+      {labRecs.map((r,i)=>{const{plain,plainStatus,sc}=simplifyLab(r);return(<div key={i} style={{...S.card,display:"flex",gap:10,alignItems:"center",marginBottom:8,cursor:"pointer"}} onClick={()=>ctx.setDetail(r)}>
+        <div style={{width:38,height:38,borderRadius:9,background:CARE.LAB.bg,display:"flex",alignItems:"center",justifyContent:"center",fontSize:18,flex:"none"}}>🔬</div>
+        <div style={{flex:1}}><div style={{fontWeight:700,fontSize:13}}>{plain}</div>
+          <div style={{fontSize:11,color:"#78716C"}}>{r.date} · {r.labName||"Lab"}</div>
+          {plainStatus&&<div style={{display:"flex",alignItems:"center",gap:5,marginTop:3}}><div style={{width:8,height:8,borderRadius:"50%",background:sc,flex:"none"}}/><div style={{fontSize:12,color:sc,fontWeight:600}}>{plainStatus}</div></div>}
+        </div>
+        <div style={{fontSize:10,color:"#A8A29E"}}>›</div>
+      </div>);})}
+    </div>}
+
+    {visits.length>0&&<div style={{marginBottom:14}}>
+      <div style={{fontSize:13,fontWeight:700,color:G,marginBottom:8}}>📅 Recent Visits</div>
+      {visits.map((r,i)=>{const ct=CARE[r.careType]||{color:"#555",bg:"#eee",icon:"📄",label:r.careType};const f=r.fields||{};const done=!f.nextAppt&&!f.nextReview&&!f.nextANC&&r.careType!=="EMERGENCY"&&r.careType!=="MATERNITY";
+        return(<div key={r.id} style={{display:"flex",gap:0,cursor:"pointer"}} onClick={()=>ctx.setDetail(r)}>
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",marginRight:10}}>
+            <div style={{width:30,height:30,borderRadius:"50%",background:ct.bg,border:"2px solid "+ct.color+"30",display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,flex:"none"}}>{ct.icon}</div>
+            {i<visits.length-1&&<div style={{width:2,flex:1,background:"#E5E2DB",minHeight:16,marginTop:3}}/>}
+          </div>
+          <div style={{...S.card,flex:1,marginBottom:8,padding:"10px 12px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+              <div style={{flex:1}}>
+                <div style={{fontSize:10,color:ct.color,fontWeight:700,textTransform:"uppercase"}}>{ct.label} · {r.date}</div>
+                <div style={{fontWeight:700,fontSize:13,marginTop:1}}>{r.title}</div>
+                {r.facility&&<div style={{fontSize:11,color:"#78716C"}}>📍 {r.facility}</div>}
+                {f.diagnosis&&<div style={{fontSize:11,color:"#57534E",marginTop:3,background:"#F9F7F4",padding:"3px 7px",borderRadius:6}}>Dx: {f.diagnosis}</div>}
+                {f.condition&&!f.diagnosis&&<div style={{fontSize:11,color:"#57534E",marginTop:3,background:"#F9F7F4",padding:"3px 7px",borderRadius:6}}>{f.condition}</div>}
+              </div>
+              <span style={{fontSize:10,color:done?"#16A34A":"#7C3AED",fontWeight:700,background:done?"#F0FDF4":"#F5F3FF",padding:"2px 7px",borderRadius:99,marginLeft:6,flex:"none"}}>{done?"Completed":"Ongoing"}</span>
+            </div>
+          </div>
+        </div>);
+      })}
+    </div>}
+
+    {!recs.length&&<div style={{textAlign:"center",padding:"40px 20px"}}>
+      <div style={{fontSize:48,marginBottom:12}}>🏥</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:G,marginBottom:8}}>Your health story starts here</div>
+      <div style={{fontSize:13,color:"#78716C",lineHeight:1.7}}>When a doctor or lab adds information, it will appear here. Share your access code with your doctor to get started.</div>
+      <button onClick={()=>ctx.setSub("access")} style={{...S.btnG,maxWidth:240,margin:"20px auto 0"}}>Share with a Doctor or Lab</button>
+    </div>}
+
+    {/* HMO Card */}
+    <div style={{...S.card,marginBottom:14,cursor:"pointer",border:"1.5px solid "+(u.hmo?.provider?HMO_PROVIDERS[u.hmo.provider]?.color||G:"#E5E2DB")}} onClick={()=>ctx.setModal("hmo")}>
+      {u.hmo?.provider?(<>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+          <div style={{fontWeight:700,fontSize:13,color:HMO_PROVIDERS[u.hmo.provider]?.color||G}}>🏥 HMO Card</div>
+          <span style={{fontSize:11,color:"#78716C"}}>tap to view or share ›</span>
+        </div>
+        <div style={{background:HMO_PROVIDERS[u.hmo.provider]?.color||G,borderRadius:12,padding:"12px 14px",color:"#fff"}}>
+          <div style={{fontSize:11,opacity:.7,marginBottom:2}}>{u.hmo.provider}</div>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>{u.name}</div>
+          <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
+            <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Member ID</div><div style={{fontSize:13,fontWeight:800,letterSpacing:.5,marginTop:1}}>{u.hmo.memberId}</div></div>
+            <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Plan</div><div style={{fontSize:12,fontWeight:700,marginTop:1}}>{u.hmo.plan||"—"}</div></div>
+            {u.hmo.expiry&&<div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Expires</div><div style={{fontSize:12,fontWeight:700,marginTop:1}}>{u.hmo.expiry}</div></div>}
+          </div>
+        </div>
+      </>):(
+        <div style={{display:"flex",gap:12,alignItems:"center"}}>
+          <div style={{width:40,height:40,borderRadius:10,background:"#F0FDF4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:22,flex:"none"}}>🏥</div>
+          <div style={{flex:1}}><div style={{fontWeight:700,fontSize:14,color:G}}>Add HMO Card</div><div style={{fontSize:12,color:"#78716C",marginTop:2}}>Store your health insurance details for quick sharing at hospital desks</div></div>
+          <span style={{fontSize:18,color:G}}>+</span>
+        </div>
+      )}
+    </div>
+
+    <div style={{...S.card,background:"#FEF9EC",border:"1px solid #FCD34D",marginBottom:14}}>
+      <div style={{fontWeight:700,fontSize:12,marginBottom:4,color:"#92400E"}}>🆘 Emergency Contact</div>
+      <div style={{fontSize:13,color:"#57534E"}}><strong>{u.nokName}</strong> ({u.nokRelation}) · {u.nokPhone}</div>
+    </div>
+  </div>);
+}
+
+// ── PATIENT HISTORY ───────────────────────────────────────────────
+function PatientHistory({ctx,recs}){
+  const [filter,setFilter]=useState("ALL");
+  const filtered=filter==="ALL"?recs:recs.filter(r=>r.careType===filter);
+  const grouped=filtered.reduce((acc,r)=>{const ym=r.date?.slice(0,7)||"Unknown";if(!acc[ym])acc[ym]=[];acc[ym].push(r);return acc;},{});
+  const fmt=ym=>{if(!ym||ym==="Unknown")return"Unknown";const[y,m]=ym.split("-");return new Date(y,m-1).toLocaleDateString("en-NG",{month:"long",year:"numeric"});};
+  return(<div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:12}}>My Health History</div>
+    <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
+      {["ALL",...Object.keys(CARE)].map(k=>{const info=k==="ALL"?{label:"All",color:G,bg:"#D1FAE5"}:CARE[k];const active=filter===k;return(<button key={k} onClick={()=>setFilter(k)} style={{padding:"5px 12px",borderRadius:99,fontSize:11,fontWeight:600,border:active?"2px solid "+info.color:"2px solid #E5E2DB",background:active?info.bg:"#FAFAF9",color:active?info.color:"#78716C",cursor:"pointer"}}>{k==="ALL"?"All":info.label}</button>);})}
+    </div>
+    {!filtered.length&&<div style={{textAlign:"center",padding:"30px",color:"#78716C",fontSize:13}}>No records in this category yet.</div>}
+    {Object.entries(grouped).sort(([a],[b])=>b.localeCompare(a)).map(([ym,grp])=>(
+      <div key={ym} style={{marginBottom:18}}>
+        <div style={{fontSize:11,fontWeight:700,color:"#A8A29E",textTransform:"uppercase",letterSpacing:1,marginBottom:8,paddingBottom:5,borderBottom:"1px solid #F0EDE8"}}>{fmt(ym)} · {grp.length} record{grp.length!==1?"s":""}</div>
+        {grp.map(r=>{const ct=CARE[r.careType]||{color:"#555",bg:"#eee",icon:"📄",label:r.careType};const f=r.fields||{};
+          return(<div key={r.id} style={{...S.card,display:"flex",gap:10,marginBottom:7,cursor:"pointer",alignItems:"flex-start"}} onClick={()=>ctx.setDetail(r)}>
+            <div style={{background:ct.bg,borderRadius:8,width:34,height:34,display:"flex",alignItems:"center",justifyContent:"center",fontSize:17,flex:"none",marginTop:1}}>{ct.icon}</div>
+            <div style={{flex:1,minWidth:0}}>
+              <div style={{fontSize:9,fontWeight:700,color:ct.color,textTransform:"uppercase"}}>{ct.label}</div>
+              <div style={{fontWeight:700,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.title}</div>
+              {r.facility&&<div style={{fontSize:11,color:"#78716C"}}>📍 {r.facility}</div>}
+              {f.diagnosis&&<div style={{fontSize:11,color:"#57534E",marginTop:1}}>Dx: {f.diagnosis}</div>}
+              {f.condition&&!f.diagnosis&&<div style={{fontSize:11,color:"#57534E",marginTop:1}}>{f.condition}</div>}
+              {r.careType==="PHARMACY"&&f.genericName&&<div style={{fontSize:11,color:"#0891B2",fontWeight:600,marginTop:1}}>💊 {f.genericName} {f.dose}</div>}
+              {r.careType==="LAB"&&f.resultStatus&&<span style={{fontSize:10,fontWeight:700,color:"#fff",background:STATUS_COLOR[f.resultStatus]||"#78716C",padding:"1px 7px",borderRadius:99,display:"inline-block",marginTop:2}}>{f.resultStatus}</span>}
+            </div>
+            <div style={{fontSize:10,color:"#A8A29E",marginTop:2}}>›</div>
+          </div>);
+        })}
+      </div>
+    ))}
+  </div>);
+}
+
+// ── PATIENT DOCUMENTS ─────────────────────────────────────────────
+function PatientDocuments({ctx}){
+  const phone=ctx.user?.phone;
+  const [docs,setDocs]=useState(()=>DB.get("hvng_docs_"+phone)||[]);
+  const [uploading,setUploading]=useState(false);
+  const [processing,setProcessing]=useState(false);
+  const fileRef=useRef();
+
+  const processDoc=async(doc)=>{
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:doc.type,data:doc.dataUrl.split(",")[1]}},{type:"text",text:"Extract medical information from this document as JSON only: {careType: GENERAL/MATERNITY/LAB/CHRONIC/EMERGENCY/PHARMACY, title: string, facility: string or null, date: YYYY-MM-DD or null, fields: {diagnosis, treatment, genericName, dose, frequency, indication, nafdac, testCategory, resultStatus, result, condition, notes}}. Return ONLY valid JSON."}]}]})});
+      const data=await res.json();
+      const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
+      const extracted=JSON.parse(text);
+      if(extracted?.careType&&CARE[extracted.careType]){
+        const rec={id:Date.now(),date:extracted.date||today(),careType:extracted.careType,title:extracted.title||"Uploaded Document",facility:extracted.facility||"",addedBy:"patient",attachments:[{name:doc.name,type:doc.type,size:doc.size,dataUrl:doc.dataUrl}],fields:extracted.fields||{},fromUpload:true};
+        const recs=DB.get("hvng_records_"+phone)||[];
+        DB.set("hvng_records_"+phone,[...recs,rec]);
+        ctx.flash("Document scanned and added to your records!");
+      }
+    }catch(e){}
+  };
+
+  const handleUpload=async(e)=>{
+    const files=Array.from(e.target.files);if(!files.length)return;
+    setUploading(true);const newDocs=[];
+    for(const file of files){
+      if(file.size>10*1024*1024){ctx.flash(file.name+" is over 10MB","err");continue;}
+      const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+      newDocs.push({id:Date.now()+Math.random(),name:file.name,type:file.type,size:file.size,dataUrl,uploaded:today()});
+    }
+    const all=[...docs,...newDocs];DB.set("hvng_docs_"+phone,all);setDocs(all);setUploading(false);e.target.value="";
+    if(newDocs.length){ctx.flash(newDocs.length+" document"+(newDocs.length>1?"s":"")+" uploaded!");
+      for(const doc of newDocs){if(doc.type.startsWith("image/")){setProcessing(true);await processDoc(doc);setProcessing(false);}}}
+  };
+
+  return(<div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>My Health Documents</div>
+    <div style={{fontSize:13,color:"#78716C",lineHeight:1.7,marginBottom:14}}>Upload prescriptions, lab results or any health document. Photos of documents are automatically scanned and saved to your records.</div>
+    <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{display:"none"}} onChange={handleUpload}/>
+    <div onClick={()=>fileRef.current.click()} style={{background:"#F0FDF4",border:"2px dashed #86EFAC",borderRadius:16,padding:"24px 20px",textAlign:"center",cursor:"pointer",marginBottom:14}}>
+      <div style={{fontSize:32,marginBottom:6}}>📤</div>
+      <div style={{fontWeight:700,fontSize:14,color:G,marginBottom:3}}>Upload Health Documents</div>
+      <div style={{fontSize:12,color:"#78716C"}}>Prescriptions · Lab results · Discharge letters · Referral letters</div>
+      <div style={{marginTop:10,background:G,color:"#fff",padding:"9px 22px",borderRadius:99,display:"inline-block",fontSize:13,fontWeight:700}}>{uploading?"Uploading...":"Choose Files"}</div>
+    </div>
+    {processing&&<div style={{...S.card,background:"#EFF6FF",border:"1px solid #BFDBFE",marginBottom:12,display:"flex",gap:10,alignItems:"center"}}>
+      <span style={{fontSize:22}}>🤖</span><div><div style={{fontWeight:700,fontSize:12,color:"#1E40AF"}}>Reading document...</div><div style={{fontSize:11,color:"#3B82F6",marginTop:1}}>AI is scanning for medical information</div></div>
+    </div>}
+    <div style={{...S.card,background:"#FFFBEB",border:"1px solid #FCD34D",marginBottom:14}}>
+      <div style={{fontWeight:700,fontSize:11,color:"#92400E",marginBottom:4}}>💡 Tips</div>
+      {["Good lighting makes a big difference","Make sure the text is clearly visible","Works well with printed prescriptions, results and letters"].map((t,i)=><div key={i} style={{fontSize:11,color:"#57534E",display:"flex",gap:6,marginBottom:2}}><span style={{color:"#92400E"}}>•</span>{t}</div>)}
+    </div>
+    {docs.length>0&&<div>
+      <div style={{fontSize:13,fontWeight:700,color:G,marginBottom:8}}>Uploaded Documents ({docs.length})</div>
+      {docs.map(doc=><div key={doc.id} style={{...S.card,display:"flex",gap:10,alignItems:"center",marginBottom:8}}>
+        <div style={{width:40,height:40,borderRadius:9,background:doc.type.startsWith("image/")?"#EDE9FE":"#FEF3C7",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flex:"none"}}>{doc.type.startsWith("image/")?"🖼️":"📄"}</div>
+        <div style={{flex:1,minWidth:0}}>
+          <div style={{fontWeight:600,fontSize:12,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{doc.name}</div>
+          <div style={{fontSize:10,color:"#78716C",marginTop:1}}>Uploaded {doc.uploaded} · {(doc.size/1024).toFixed(0)} KB</div>
+        </div>
+        <button onClick={()=>{const u=docs.filter(d=>d.id!==doc.id);DB.set("hvng_docs_"+phone,u);setDocs(u);ctx.flash("Removed");}} style={{background:"#FEE2E2",color:"#DC2626",border:"none",borderRadius:7,padding:"5px 9px",fontSize:11,cursor:"pointer",fontWeight:600}}>Remove</button>
+      </div>)}
+    </div>}
+    {!docs.length&&<div style={{textAlign:"center",padding:"20px",color:"#A8A29E",fontSize:12}}>No documents uploaded yet.</div>}
   </div>);
 }
 
@@ -1068,155 +1615,37 @@ function AccessManager({ctx}){
     if(!label.trim()) return ctx.flash("Please name this access code first","err");
     const c=genCode(),exp=Date.now()+24*60*60*1000;
     const all=[...(DB.get("hvng_access_codes")||[]),{code:c,phone:ph,label:label.trim(),expires:exp,active:true,generated:today()}];
-    DB.set("hvng_access_codes",all);setAllCodes(all);setLabel("");ctx.flash(`Code generated for "${label.trim()}"`);
+    DB.set("hvng_access_codes",all);setAllCodes(all);setLabel("");ctx.flash("Access code generated!");
   };
   const revoke=(code)=>{const all=(DB.get("hvng_access_codes")||[]).map(c=>c.code===code?{...c,active:false}:c);DB.set("hvng_access_codes",all);setAllCodes(all);ctx.flash("Access revoked","err");};
   return(<div>
-    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>Access Management</div>
-    <div style={{fontSize:14,color:"#78716C",marginBottom:18,lineHeight:1.7}}>You have given access to <strong>{active.length}</strong> doctor{active.length!==1?"s/labs":""}. Each code expires in 24 hours.</div>
-    <div style={{...S.card,marginBottom:18}}>
-      <div style={{fontWeight:700,fontSize:14,marginBottom:12}}>🔑 Grant New Access</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>Share with a Doctor or Lab</div>
+    <div style={{fontSize:13,color:"#78716C",lineHeight:1.7,marginBottom:14}}>Give your doctor or lab a one-time code to view your records. The code expires in <strong>24 hours</strong>. You can cancel it anytime.</div>
+    <div style={{...S.card,marginBottom:16}}>
+      <div style={{fontWeight:700,fontSize:14,marginBottom:12}}>🔑 Give Access to a Doctor or Lab</div>
       <Fl label="Who is this for?"><input style={S.inp} placeholder="e.g. Dr. Fatima Bello / Medilab Diagnostics" value={label} onChange={e=>setLabel(e.target.value)} maxLength={80}/></Fl>
-      <button style={S.btnG} onClick={generate}>Generate Access Code</button>
+      <button style={S.btnG} onClick={generate}>Create Sharing Code</button>
     </div>
-    <div style={{fontWeight:700,fontSize:14,color:G,marginBottom:10}}>✅ Active Access ({active.length})</div>
-    {!active.length&&<div style={{fontSize:13,color:"#78716C",marginBottom:18,padding:"14px",background:"#F9F7F4",borderRadius:12}}>No active codes. Generate one above.</div>}
-    <div style={{display:"flex",flexDirection:"column",gap:10,marginBottom:24}}>
-      {active.map(c=>(
-        <div key={c.code} style={{...S.card,border:"1.5px solid #BBF7D0"}}>
-          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-            <div><div style={{fontWeight:700,fontSize:14}}>{c.label}</div><div style={{fontSize:11,color:"#78716C",marginTop:2}}>Generated: {c.generated} · Expires in 24h</div></div>
-            <button onClick={()=>revoke(c.code)} style={{background:"#FEE2E2",color:"#DC2626",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>Revoke</button>
-          </div>
-          <div style={{background:"#F0FDF4",border:"2px dashed #86EFAC",borderRadius:10,padding:"10px 16px",textAlign:"center"}}>
-            <div style={{fontSize:10,color:"#15803D",fontWeight:700,letterSpacing:2,marginBottom:4}}>ACCESS CODE</div>
-            <div style={{fontFamily:"monospace",fontSize:30,fontWeight:900,letterSpacing:8,color:G}}>{c.code}</div>
-          </div>
-        </div>
-      ))}
-    </div>
-    {expired.length>0&&(<>
-      <div style={{fontWeight:700,fontSize:14,color:"#78716C",marginBottom:10}}>⏱ Past Access ({expired.length})</div>
-      {expired.map(c=><div key={c.code} style={{...S.card,opacity:.6,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}><div><div style={{fontWeight:600,fontSize:13}}>{c.label}</div><div style={{fontFamily:"monospace",fontSize:12,color:"#78716C",marginTop:2}}>{c.code} · {c.active?"Expired":"Revoked"}</div></div></div>)}
-    </>)}
+    {active.length>0&&<div style={{fontWeight:700,fontSize:13,color:G,marginBottom:8}}>Active Access ({active.length})</div>}
+    {active.map(c=>(<div key={c.code} style={{...S.card,border:"1.5px solid #BBF7D0",marginBottom:10}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+        <div><div style={{fontWeight:700,fontSize:14}}>{c.label}</div><div style={{fontSize:11,color:"#78716C",marginTop:1}}>Expires in 24h · Generated {c.generated}</div></div>
+        <button onClick={()=>revoke(c.code)} style={{background:"#FEE2E2",color:"#DC2626",border:"none",borderRadius:8,padding:"6px 12px",fontSize:12,cursor:"pointer",fontWeight:600}}>Revoke</button>
+      </div>
+      <div style={{background:"#F0FDF4",border:"2px dashed #86EFAC",borderRadius:10,padding:"10px 16px",textAlign:"center"}}>
+        <div style={{fontSize:10,color:"#15803D",fontWeight:700,letterSpacing:2,marginBottom:4}}>ACCESS CODE</div>
+        <div style={{fontFamily:"monospace",fontSize:30,fontWeight:900,letterSpacing:8,color:G}}>{c.code}</div>
+        <div style={{fontSize:11,color:"#78716C",marginTop:3}}>Share this code with your doctor or lab</div>
+      </div>
+    </div>))}
+    {!active.length&&<div style={{fontSize:13,color:"#78716C",padding:"14px",background:"#F9F7F4",borderRadius:12,marginBottom:14}}>No active codes. Generate one above to share your records.</div>}
+    {expired.length>0&&<>
+      <div style={{fontWeight:700,fontSize:12,color:"#78716C",marginBottom:6}}>Past Access ({expired.length})</div>
+      {expired.slice(0,5).map(c=><div key={c.code} style={{...S.card,opacity:.5,display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6,padding:"9px 12px"}}><div style={{fontWeight:600,fontSize:12}}>{c.label}</div><div style={{fontFamily:"monospace",fontSize:10,color:"#78716C"}}>{c.code} · {c.active?"Expired":"Revoked"}</div></div>)}
+    </>}
   </div>);
 }
 
-// ── ADD RECORD ────────────────────────────────────────────────────
-function AddRecord({ctx,isDr}){
-  const {form:f,setForm:setF}=ctx;
-  const upd=(k,v)=>setF(p=>({...p,[k]:v}));
-  const updFld=(k,v)=>setF(p=>({...p,fields:{...p.fields,[k]:v}}));
-  const fileRef=useRef();
-  const applyQuick=(q)=>setF(p=>({...p,fields:{...p.fields,...q.fields},title:q.fields.title||p.title,quickApplied:q.label}));
-  const handleFiles=async(e)=>{
-    const processed=[];
-    for(const file of Array.from(e.target.files)){
-      if(file.size>5*1024*1024){ctx.flash(`${file.name} over 5MB`,"err");continue;}
-      const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
-      processed.push({name:file.name,type:file.type,size:file.size,dataUrl});
-    }
-    setF(p=>({...p,attachments:[...(p.attachments||[]),...processed]}));e.target.value="";
-  };
-  const save=()=>{
-    const phone=ctx.user?.phone||ctx.vp?.phone;
-    if(!f.date) return ctx.flash("Date is required","err");
-    if(!f.title) return ctx.flash("Title is required","err");
-    const rec={...f,id:Date.now(),addedBy:isDr?"doctor":"patient",docEmail:isDr?ctx.doc?.email:"",attachments:f.attachments||[]};
-    if(ctx.online!==false){
-      const recs=DB.get(`hvng_records_${phone}`)||[];
-      DB.set(`hvng_records_${phone}`,[...recs,rec]);
-    } else {
-      Q.push({type:"addRecord",phone,rec});ctx.setQCount(Q.count());
-    }
-    if(isDr) pushNotif(phone,`Dr. ${ctx.doc?.name||"Your clinician"} added a ${CARE[f.careType]?.label||""} record.`,"visit",ctx.doc?.name||"");
-    setF(ctx.blank());ctx.flash(ctx.online!==false?"Record saved!":"Saved offline — will sync when connected","ok");
-    if(isDr) ctx.go("dr-view");else ctx.setSub("timeline");
-  };
-  const atts=f.attachments||[];const ct=f.careType;const quickList=QUICK[ct]||[];
-  return(<div>
-    {!isDr&&(<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G}}>Add New Record</div>
-      <button onClick={()=>{setF(ctx.blank());ctx.setSub("timeline");}} style={{background:"#F3F1EC",color:"#57534E",border:"none",borderRadius:9,padding:"8px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>✕ Cancel</button>
-    </div>)}
-    <div style={S.card}>
-      <Fl label="Care Type">
-        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-          {CARE_TYPES.map(c=>{const info=CARE[c];const active=ct===c;return(
-            <div key={c} onClick={()=>{upd("careType",c);setF(p=>({...p,fields:{},quickApplied:null}));}} style={{padding:"9px 12px",borderRadius:10,cursor:"pointer",border:active?`2px solid ${info.color}`:"2px solid #E5E2DB",background:active?info.bg:"#FAFAF9",display:"flex",alignItems:"center",gap:8,transition:"all .15s"}}>
-              <span style={{fontSize:18}}>{info.icon}</span>
-              <div><div style={{fontSize:12,fontWeight:active?700:500,color:active?info.color:"#57534E"}}>{info.label}</div><div style={{fontSize:10,color:"#A8A29E"}}>{info.desc}</div></div>
-            </div>
-          );})}
-        </div>
-      </Fl>
-      {quickList.length>0&&(<div style={{marginBottom:14}}>
-        <div style={{fontSize:11,fontWeight:700,color:CARE[ct]?.color,marginBottom:8,textTransform:"uppercase",letterSpacing:.5}}>⚡ Common Presentations</div>
-        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
-          {quickList.map(q=>{const active=f.quickApplied===q.label;return(<div key={q.label} onClick={()=>applyQuick(q)} style={{padding:"6px 12px",borderRadius:99,fontSize:12,fontWeight:600,cursor:"pointer",border:active?`2px solid ${CARE[ct]?.color}`:"2px solid #E5E2DB",background:active?CARE[ct]?.bg:"#FAFAF9",color:active?CARE[ct]?.color:"#57534E",transition:"all .15s",display:"flex",alignItems:"center",gap:4}}>{q.icon} {q.label}{active&&" ✓"}</div>);})}
-        </div>
-        {f.quickApplied&&<div style={{fontSize:12,color:CARE[ct]?.color,marginTop:5,fontWeight:600}}>✓ Pre-filled — edit any field below</div>}
-      </div>)}
-      <Fl label="Visit Title *"><input style={S.inp} placeholder={`e.g. ${CARE[ct].label} visit`} value={f.title} onChange={e=>upd("title",e.target.value)} maxLength={LIMIT.short}/></Fl>
-      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-        <Fl label="Date *"><input type="date" style={S.inp} value={f.date} onChange={e=>upd("date",e.target.value)}/></Fl>
-        <Fl label="Facility"><input style={S.inp} value={f.facility} onChange={e=>upd("facility",e.target.value)} maxLength={LIMIT.short}/></Fl>
-      </div>
-      <CareFields careType={ct} fields={f.fields||{}} upd={updFld} isDr={isDr}/>
-      <div style={{borderTop:"1.5px solid #E5E2DB",marginTop:8,paddingTop:14}}>
-        <div style={{fontSize:11,fontWeight:700,color:"#57534E",marginBottom:8,textTransform:"uppercase",letterSpacing:.5}}>📎 Attach Files</div>
-        {atts.length>0&&<div style={{display:"flex",flexDirection:"column",gap:8,marginBottom:10}}>
-          {atts.map((a,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 12px",background:"#FAFAF9",borderRadius:10,border:"1.5px solid #E5E2DB"}}>
-            <span style={{fontSize:18}}>{a.type?.startsWith("image/")?"🖼️":"📄"}</span>
-            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:600,fontSize:12,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.name}</div><div style={{fontSize:11,color:"#78716C"}}>{(a.size/1024).toFixed(1)} KB</div></div>
-            <button onClick={()=>setF(p=>({...p,attachments:p.attachments.filter((_,x)=>x!==i)}))} style={{background:"#FEE2E2",color:"#DC2626",border:"none",borderRadius:6,padding:"4px 10px",fontSize:12,cursor:"pointer",fontWeight:600}}>✕</button>
-          </div>))}
-        </div>}
-        <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{display:"none"}} onChange={handleFiles}/>
-        <button type="button" onClick={()=>fileRef.current.click()} style={{width:"100%",padding:"12px",borderRadius:12,border:"2px dashed #D6D3CE",background:"#FAFAF9",cursor:"pointer",fontSize:14,color:"#57534E",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-          <span style={{fontSize:20}}>📎</span>{atts.length>0?`Add more (${atts.length} attached)`:"Upload PDF or Photo"}
-        </button>
-      </div>
-      <button style={{...isDr?S.btnB:S.btnG,marginTop:14}} onClick={save}>SAVE RECORD</button>
-    </div>
-  </div>);
-}
-
-// ── CARE FIELDS ───────────────────────────────────────────────────
-function CareFields({careType,fields:f,upd,isDr}){
-  const ta=(label,key,max=LIMIT.notes)=>(<Fl key={key} label={label}><textarea style={{...S.inp,height:76,resize:"vertical"}} value={f[key]||""} onChange={e=>upd(key,e.target.value)} maxLength={max}/><CharCount val={f[key]||""} max={max}/></Fl>);
-  const inp=(label,key,ph,max=LIMIT.short)=>(<Fl key={key} label={label}><input style={S.inp} placeholder={ph} value={f[key]||""} onChange={e=>upd(key,e.target.value)} maxLength={max}/></Fl>);
-  const vit=(label,key,ph)=><Fl key={key} label={label}><input style={S.inp} placeholder={ph} value={f[key]||""} onChange={e=>upd(key,e.target.value)} maxLength={20}/></Fl>;
-  const grid=ch=><div key="g" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{ch.filter(Boolean)}</div>;
-  const dt=(label,key)=><Fl key={key} label={label}><input type="date" style={S.inp} value={f[key]||""} onChange={e=>upd(key,e.target.value)}/></Fl>;
-  const SECTIONS={
-    GENERAL:[inp("Presenting Complaint","complaint","e.g. 3-day fever, chills"),isDr&&inp("Malaria RDT","malariaRDT","Positive / Negative",50),isDr&&inp("Diagnosis","diagnosis","e.g. Malaria, Typhoid"),isDr&&inp("Treatment","treatment","e.g. Artemether-Lumefantrine BD x3 days"),grid([vit("Temp (°C)","temp","38.5"),vit("BP","bp","120/80"),vit("Weight (kg)","weight","66"),isDr&&dt("Next Appointment","nextAppt")]),ta("Clinical Notes","notes")],
-    MATERNITY:[inp("Presenting Complaint","complaint","e.g. Ankle swelling"),isDr&&inp("Gestational Age","gestationalAge","e.g. 28 weeks",30),isDr&&inp("Diagnosis","diagnosis","e.g. Normal pregnancy"),grid([vit("BP","bp","118/76"),vit("Weight (kg)","weight","68"),isDr&&vit("Fundal Height (cm)","fundalHeight","28"),isDr&&vit("Fetal HR","fetalHeartRate","144 bpm"),dt("Next ANC","nextANC")]),ta("Clinical Notes","notes")],
-    LAB:[inp("Test / Panel","testsRun","e.g. FBC, Malaria RDT"),ta("Results","results",LIMIT.notes),<Fl key="st" label="Status"><select style={S.inp} value={f.resultStatus||"Normal"} onChange={e=>upd("resultStatus",e.target.value)}>{STATUS_OPTS.map(o=><option key={o}>{o}</option>)}</select></Fl>,ta("Notes","notes")],
-    CHRONIC:[inp("Condition","condition","e.g. Hypertension, Diabetes"),inp("Presenting Complaint","complaint","e.g. Headaches"),isDr&&inp("Diagnosis","diagnosis"),grid([vit("BP","bp","148/94"),vit("Weight (kg)","weight","78"),vit("Blood Glucose","bloodGlucose","7.2 mmol/L"),isDr&&vit("HbA1c","hba1c","8.1%")]),isDr&&inp("Current Medications","currentMeds","e.g. Amlodipine 5mg OD"),isDr&&inp("Medication Change","medsChange","e.g. Increase to 10mg OD"),isDr&&dt("Next Review","nextReview"),ta("Clinical Notes","notes")],
-    EMERGENCY:[ta("Complaint / Mechanism","complaint",LIMIT.notes),grid([vit("BP","bp","90/60"),vit("Temp (°C)","temp","38.0"),vit("Pulse","pulse","110 bpm"),vit("O₂ Sat","o2sat","94%")]),isDr&&ta("Action Taken","actionTaken"),isDr&&inp("Discharge / Referral","referral","e.g. Admitted / Discharged"),ta("Additional Notes","notes")],
-    PHARMACY:[
-      inp("Generic Drug Name *","genericName","e.g. Amlodipine, Metformin"),
-      inp("Brand Name","brandName","e.g. Norvasc, Glucophage"),
-      <div key="grid1" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-        <Fl key="dose" label="Dose"><input style={S.inp} placeholder="e.g. 5mg" value={f.dose||""} onChange={e=>upd("dose",e.target.value)} maxLength={30}/></Fl>
-        <Fl key="freq" label="Frequency"><input style={S.inp} placeholder="e.g. Once daily" value={f.frequency||""} onChange={e=>upd("frequency",e.target.value)} maxLength={50}/></Fl>
-        <Fl key="qty" label="Quantity"><input style={S.inp} placeholder="e.g. 30 tablets" value={f.quantity||""} onChange={e=>upd("quantity",e.target.value)} maxLength={30}/></Fl>
-        <Fl key="nafdac" label="NAFDAC No."><input style={S.inp} placeholder="e.g. A4-0056" value={f.nafdac||""} onChange={e=>upd("nafdac",e.target.value)} maxLength={20}/></Fl>
-      </div>,
-      inp("Indication (Reason)","indication","e.g. Hypertension, Type 2 Diabetes"),
-      inp("Prescribed By","prescribedBy","e.g. Dr. Emeka Nwosu"),
-      inp("Dispensed By","dispensedBy","e.g. PharmD. Sola Adeyemi"),
-      ta("Patient Counselling Notes","notes"),
-    ],
-  };
-  const rows=(SECTIONS[careType]||[]).filter(Boolean);
-  const cInfo=CARE[careType];
-  return(<div style={{borderTop:"1.5px solid #E5E2DB",marginTop:4,paddingTop:14}}>
-    <div style={{fontSize:11,fontWeight:700,color:cInfo?.color||"#555",marginBottom:12,textTransform:"uppercase",letterSpacing:.5}}>{cInfo?.icon} {cInfo?.label} Details</div>
-    {rows}
-  </div>);
-}
 
 // ── DOCTOR LOGIN + REGISTER ───────────────────────────────────────
 function DrLogin({ctx}){
@@ -1272,7 +1701,7 @@ function DrRegister({ctx}){
       </div>
       <Fl label="Hospital / Practice Affiliations"><input style={S.inp} placeholder="e.g. LUTH, Lagos Island General" value={f.hospitals} onChange={e=>upd("hospitals",e.target.value)}/></Fl>
       <Fl label="Short Bio (optional)"><textarea style={{...S.inp,height:68,resize:"vertical"}} placeholder="Brief professional summary…" value={f.bio} onChange={e=>upd("bio",e.target.value)} maxLength={400}/><CharCount val={f.bio} max={400}/></Fl>
-      <button style={S.btnB} onClick={submit}>Create Clinician Account</button>
+      <button style={S.btnB} onClick={submit}>Create My Account</button>
     </div>
     <Back onClick={()=>ctx.go("dr-login")}/>
   </div>);
@@ -1387,7 +1816,7 @@ function DrPatients({ctx,drKey}){
             <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
           </Fl>
           {codeErr&&<div style={{color:"#DC2626",fontSize:13,marginBottom:10,lineHeight:1.5}}>{codeErr}</div>}
-          <button style={S.btnB} onClick={lookupPatient}>FIND &amp; VIEW PATIENT</button>
+          <button style={S.btnB} onClick={lookupPatient}>Find Patient</button>
           <button style={{...S.btnG,marginTop:10,background:"#F3F1EC",color:"#57534E",boxShadow:"none"}} onClick={()=>{setShowAddModal(false);setCode("");setCodeErr("");}}>Cancel</button>
         </div>
       </div>
@@ -1596,7 +2025,7 @@ function LabMyPatients({ctx,labKey}){
             <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
           </Fl>
           {codeErr&&<div style={{color:"#DC2626",fontSize:13,marginBottom:10,lineHeight:1.5}}>{codeErr}</div>}
-          <button style={S.btnL} onClick={lookupPatient}>FIND &amp; ADD PATIENT</button>
+          <button style={S.btnL} onClick={lookupPatient}>Add Patient</button>
           <button style={{...S.btnG,marginTop:10,background:"#F3F1EC",color:"#57534E",boxShadow:"none"}} onClick={()=>{setShowAddModal(false);setCode("");setCodeErr("");}}>Cancel</button>
         </div>
       </div>
@@ -1703,7 +2132,7 @@ function LabEntry({ctx,labKey}){
         <div style={{fontSize:11,fontWeight:700,color:"#D97706",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>🔬 {testCat} — Enter or Review Values</div>
         <StructuredTestForm testCat={testCat} fields={fields} upd={upd}/>
       </div>
-      <button style={{...S.btnL,marginTop:14}} onClick={save}>POST RESULT TO PATIENT RECORD</button>
+      <button style={{...S.btnL,marginTop:14}} onClick={save}>Save Result to Patient</button>
     </div>
   </div>);
 }

@@ -611,7 +611,7 @@ REASON FOR REFERRAL
 ${reason||"[Please complete reason for referral]"}
 
 KNOWN CONDITIONS
-${conditions.length?conditions.map(c=>`• ${c}`).join("\n"):"None documented"}
+${conditions.length?conditions.map(c=>"\u2022 "+c).join("\n"):"None documented"}
 
 CURRENT MEDICATIONS
 ${meds}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+const _blob=new Blob(["<html><head><title>Referral - "+pt.name+"</title>import { useState, useEffect, useRef } from "react";
 
 // ── Storage ───────────────────────────────────────────────────────
 const DB = {

@@ -1470,7 +1470,7 @@ function PatientDashboard({ctx,recs}){
     </div>}
 
     {/* HMO Card */}
-    <div style={{...S.card,marginBottom:14,cursor:"pointer",border:"1.5px solid "+(u.hmo?.provider?HMO_PROVIDERS[u.hmo.provider]?.color||G:"#E5E2DB")}} onClick={()= onClick={()=>setShowHMO(true)}>ctx.setModal("hmo")}>
+    <div style={{...S.card,marginBottom:14,cursor:"pointer",border:"1.5px solid "+(u.hmo?.provider?HMO_PROVIDERS[u.hmo.provider]?.color||G:"#E5E2DB")}} onClick={()=>setShowHMO(true)}>
       {u.hmo?.provider?(<>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
           <div style={{fontWeight:700,fontSize:13,color:HMO_PROVIDERS[u.hmo.provider]?.color||G}}>🏥 HMO Card</div>

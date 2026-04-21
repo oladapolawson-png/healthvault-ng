@@ -388,6 +388,7 @@ function NotifSheet({phone,onClose}){
 // ── EMERGENCY CARD ────────────────────────────────────────────────
 function EmergencyCard({person,recs,onClose}){
   const p=person;
+  const [fullScreen,setFullScreen]=useState(false);
   const recent=recs.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3);
   const meds=[...new Set(recs.filter(r=>r.fields?.currentMeds).map(r=>r.fields.currentMeds))].slice(0,3);
   const share=()=>{
@@ -410,7 +411,29 @@ function EmergencyCard({person,recs,onClose}){
       {recent.map((r,i)=><div key={i} style={{fontSize:13,padding:"6px 12px",background:"#FEE2E2",borderRadius:8,marginBottom:5,color:"#991B1B",fontWeight:600}}>{r.fields?.diagnosis||r.title} · {r.date}</div>)}
     </div>)}
     <button style={{...S.sm("r"),width:"100%",padding:13,fontSize:14,background:"#DC2626",color:"#fff",border:"none",borderRadius:12,cursor:"pointer",marginBottom:10,fontWeight:700}} onClick={share}>📤 Share Emergency Card</button>
+    <button onClick={()=>setFullScreen(true)} style={{width:"100%",padding:12,borderRadius:11,background:"#DC2626",color:"#fff",border:"none",cursor:"pointer",fontWeight:700,fontSize:13,marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+      🚨 SHOW TO FIRST RESPONDERS - Full Screen
+    </button>
     <button style={{...S.btnG}} onClick={onClose}>Close</button>
+    {fullScreen&&(
+      <div style={{position:"fixed",inset:0,background:"#DC2626",zIndex:9999,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28,textAlign:"center"}} onClick={()=>setFullScreen(false)}>
+        <div style={{fontSize:44,marginBottom:10}}>🆘</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:36,fontWeight:900,color:"#fff",lineHeight:1.1,marginBottom:6}}>{p.name}</div>
+        <div style={{fontSize:24,fontWeight:800,color:"rgba(255,255,255,0.9)",marginBottom:24}}>Blood: {p.bloodGroup} · Genotype: {p.genotype}</div>
+        {p.allergies&&p.allergies!=="None known"&&(
+          <div style={{background:"#fff",borderRadius:14,padding:"14px 24px",marginBottom:14,width:"100%",maxWidth:360}}>
+            <div style={{fontSize:11,fontWeight:700,color:"#DC2626",letterSpacing:1.5,marginBottom:4}}>⚠️ DRUG ALLERGY</div>
+            <div style={{fontSize:26,fontWeight:900,color:"#0F0F0E"}}>{p.allergies}</div>
+          </div>
+        )}
+        <div style={{background:"rgba(255,255,255,0.15)",borderRadius:14,padding:"14px 24px",marginBottom:8,width:"100%",maxWidth:360}}>
+          <div style={{fontSize:11,fontWeight:700,color:"rgba(255,255,255,0.6)",letterSpacing:1.5,marginBottom:4}}>EMERGENCY CONTACT</div>
+          <div style={{fontSize:22,fontWeight:800,color:"#fff"}}>{p.nokName}</div>
+          <div style={{fontSize:18,color:"rgba(255,255,255,0.8)"}}>{p.nokPhone} · {p.nokRelation}</div>
+        </div>
+        <div style={{fontSize:12,color:"rgba(255,255,255,0.4)",marginTop:20}}>Tap anywhere to close</div>
+      </div>
+    )}
   </Sheet>);
 }
 
@@ -564,6 +587,17 @@ function VitalTrends({recs,onClose}){
         ))}
       </div>
     </div>)}
+    {/* Plain language interpretation */}
+    {bpRecs.length>0&&(<div style={{...S.card,background:"#F0FDF4",border:"1.5px solid #BBF7D0",marginTop:14}}>
+      <div style={{fontWeight:700,fontSize:12,color:G,marginBottom:6}}>📊 What This Means</div>
+      {(()=>{
+        const lastBP=bpRecs[bpRecs.length-1];
+        const [sys]=lastBP.sys?[lastBP.sys]:[0];
+        if(sys>=140) return <div style={{fontSize:12,color:"#57534E",lineHeight:1.7}}>Your blood pressure has been high recently (above 140). This means your heart is working harder than it should. <strong>Please speak to your doctor about this.</strong></div>;
+        if(sys>=120) return <div style={{fontSize:12,color:"#57534E",lineHeight:1.7}}>Your blood pressure is slightly elevated. Consider reducing salt in your food and speak to your doctor at your next visit.</div>;
+        return <div style={{fontSize:12,color:"#57534E",lineHeight:1.7}}>Your blood pressure readings look healthy. Keep up your current lifestyle and medications.</div>;
+      })()}
+    </div>)}
     <button style={{...S.btnG,marginTop:14}} onClick={onClose}>Close</button>
   </Sheet>);
 }
@@ -638,7 +672,7 @@ MDCN: ${doc?.mdcn||"N/A"}`;
       catch(e){}
     } else {
       navigator.clipboard.writeText(letterText).catch(()=>{});
-      flash("Letter copied to clipboard — paste into WhatsApp or email","info",5000);
+      flash("Letter copied to clipboard - paste into WhatsApp or email","info",5000);
     }
   };
 
@@ -1111,85 +1145,392 @@ function HMOCardModal({user,onClose,onSave,flash}){
 }
 
 
+// ── DRUG INFO MODAL ───────────────────────────────────────────────
+function DrugInfoButton({drug,userMeds=[]}){
+  const [show,setShow]=useState(false);
+  return(<>
+    <button onClick={()=>setShow(true)} style={{width:"100%",padding:11,borderRadius:11,background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",cursor:"pointer",fontWeight:700,fontSize:13,marginTop:8,marginBottom:4,display:"flex",alignItems:"center",justifyContent:"center",gap:6}}>
+      💊 Full Drug Information &amp; Safety Guide
+    </button>
+    {show&&<DrugInfoModal drug={drug} userMeds={userMeds} onClose={()=>setShow(false)}/>}
+  </>);
+}
+
+
+function DrugInfoModal({drug,userMeds,onClose}){
+  const [info,setInfo]=useState(null);
+  const [loading,setLoading]=useState(true);
+
+  useEffect(()=>{
+    const fetch_info=async()=>{
+      const otherMeds=userMeds.filter(m=>m!==drug).join(", ")||"None";
+      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"
+Other medications the patient is on: "+otherMeds+"
+
+Return a JSON object ONLY with these fields:
+{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
+      try{
+        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
+        const data=await res.json();
+        const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
+        setInfo(JSON.parse(text));
+      }catch(e){setInfo({name:drug,error:"Could not load drug information"});}
+      setLoading(false);
+    };
+    fetch_info();
+  },[drug]);
+
+  const Section=({title,children,color="#57534E",bg="#F9F7F4"})=>(
+    <div style={{background:bg,borderRadius:10,padding:"10px 13px",marginBottom:10}}>
+      <div style={{fontWeight:700,fontSize:11,color,marginBottom:6,textTransform:"uppercase",letterSpacing:0.5}}>{title}</div>
+      {children}
+    </div>
+  );
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"90vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>{drug}</div>
+        <div style={{fontSize:12,color:"#78716C",marginBottom:18}}>Complete drug information · Powered by AI</div>
+
+        {loading&&<div style={{textAlign:"center",padding:"30px 0"}}><div style={{fontSize:14,color:"#78716C"}}>Loading drug information...</div></div>}
+
+        {info&&!loading&&info.error&&<div style={{color:"#DC2626",fontSize:13,padding:14,background:"#FEF2F2",borderRadius:10}}>{info.error}</div>}
+
+        {info&&!loading&&!info.error&&(<>
+          {info.howItWorks&&<Section title="How It Works"><div style={{fontSize:13,color:"#57534E",lineHeight:1.7}}>{info.howItWorks}</div></Section>}
+
+          {info.uses&&<Section title="What It Is Used For" bg="#F0FDF4" color="#166534"><div style={{fontSize:13,color:"#57534E",lineHeight:1.7}}>{info.uses}</div></Section>}
+
+          {info.sideEffects?.length>0&&<Section title="Common Side Effects" bg="#FEF9EC" color="#92400E">
+            {info.sideEffects.map((s,i)=><div key={i} style={{fontSize:12,color:"#57534E",display:"flex",gap:6,marginBottom:3}}><span style={{color:"#D97706"}}>•</span>{s}</div>)}
+          </Section>}
+
+          {info.seriousWarnings?.length>0&&<Section title="Serious Warnings" bg="#FEF2F2" color="#DC2626">
+            {info.seriousWarnings.map((w,i)=><div key={i} style={{fontSize:12,color:"#57534E",display:"flex",gap:6,marginBottom:3}}><span style={{color:"#DC2626"}}>⚠</span>{w}</div>)}
+          </Section>}
+
+          {info.interactions?.length>0&&<Section title={"Interactions with Your Medications"} bg="#EFF6FF" color="#1E40AF">
+            {info.interactions.map((x,i)=><div key={i} style={{fontSize:12,color:"#57534E",display:"flex",gap:6,marginBottom:3}}><span style={{color:"#3B82F6"}}>↔</span>{x}</div>)}
+          </Section>}
+
+          {(info.missedDose||info.storage)&&<Section title="Important Instructions">
+            {info.missedDose&&<div style={{fontSize:12,color:"#57534E",marginBottom:6,lineHeight:1.6}}><strong>Missed dose:</strong> {info.missedDose}</div>}
+            {info.storage&&<div style={{fontSize:12,color:"#57534E",lineHeight:1.6}}><strong>Storage:</strong> {info.storage}</div>}
+          </Section>}
+
+          {info.nigerianBrands?.length>0&&<Section title="Available in Nigeria" bg="#F0FDF4" color="#166534">
+            {info.nigerianBrands.map((b,i)=><div key={i} style={{fontSize:12,color:"#57534E",marginBottom:3}}>{b}</div>)}
+          </Section>}
+
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:10}}>
+            {[
+              ["🤱 Pregnancy",info.pregnancySafe],
+              ["🍼 Breastfeeding",info.breastfeedingSafe],
+              ["🍺 Alcohol",info.alcoholWarning||"Consult doctor"],
+              ["🇳🇬 NAFDAC",info.nafdacStatus||"Check packaging"],
+            ].map(([label,val])=>(
+              <div key={label} style={{background:"#F9F7F4",borderRadius:9,padding:"9px 11px"}}>
+                <div style={{fontSize:10,color:"#78716C",fontWeight:700,marginBottom:3}}>{label}</div>
+                <div style={{fontSize:11,color:"#57534E",lineHeight:1.5}}>{val||"Consult doctor"}</div>
+              </div>
+            ))}
+          </div>
+        </>)}
+        <button style={{...S.btnG,background:"#F3F1EC",color:"#57534E",boxShadow:"none"}} onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+// ── MED PHOTO SCAN ────────────────────────────────────────────────
+function MedPhotoScan({onResult,flash}){
+  const [scanning,setScanning]=useState(false);
+  const fileRef=useRef();
+
+  const scan=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    setScanning(true);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type,data:dataUrl.split(",")[1]}},{type:"text",text:"Read this drug/medication packaging and extract: {genericName, brandName, dose, frequency, nafdac, manufacturer, expiryDate}. Return ONLY valid JSON. If you cannot read it clearly, return {error: 'Cannot read packaging clearly'}"}]}]})});
+      const data=await res.json();
+      const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
+      const parsed=JSON.parse(text);
+      if(parsed.error){flash(parsed.error,"err");}
+      else{onResult(parsed);flash("Drug information scanned successfully!");}
+    }catch(e){flash("Could not scan - try a clearer photo","err");}
+    setScanning(false);e.target.value="";
+  };
+
+  return(<>
+    <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={scan}/>
+    <button type="button" onClick={()=>fileRef.current.click()} style={{width:"100%",padding:11,borderRadius:10,border:"1.5px dashed #D6D3CE",background:"#FAFAF9",cursor:"pointer",fontSize:13,color:"#57534E",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:8,marginBottom:12}}>
+      {scanning?"📷 Scanning...":"📷 Scan Drug Packaging - Auto-fill details"}
+    </button>
+  </>);
+}
+
+
+// ── FAMILY HEALTH FOLDER ──────────────────────────────────────────
+function FamilyModal({user,onClose,flash,onSwitch}){
+  const [members,setMembers]=useState(()=>DB.get("hvng_family_"+user.phone)||[]);
+  const [adding,setAdding]=useState(false);
+  const [f,setF]=useState({name:"",dob:"",gender:"F",bloodGroup:"O+",genotype:"AA",relation:"Child",allergies:"None known"});
+  const upd=(k,v)=>setF(p=>({...p,[k]:v}));
+
+  const addMember=()=>{
+    if(!f.name||!f.dob) return flash("Name and date of birth required","err");
+    const member={...f,phone:user.phone+"_fam_"+Date.now(),isFamily:true,primaryPhone:user.phone,nokName:user.name,nokPhone:user.phone,nokRelation:f.relation,vaccinations:[],hmo:user.hmo||null};
+    const all=[...members,member];
+    DB.set("hvng_family_"+user.phone,all);
+    DB.set("hvng_users",[...(DB.get("hvng_users")||[]),member]);
+    DB.set("hvng_records_"+member.phone,[]);
+    setMembers(all);setAdding(false);
+    setF({name:"",dob:"",gender:"F",bloodGroup:"O+",genotype:"AA",relation:"Child",allergies:"None known"});
+    flash(f.name.split(" ")[0]+"s health folder created!");
+  };
+
+  const relations=["Child","Spouse","Parent","Sibling","Other"];
+  const allMembers=[user,...members];
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:700,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>Family Health Folder</div>
+        <div style={{fontSize:12,color:"#78716C",lineHeight:1.7,marginBottom:18}}>Manage health records for your whole family from one device. Switch between family members instantly.</div>
+
+        {/* Current user + family members */}
+        <div style={{marginBottom:18}}>
+          {allMembers.map((m,i)=>{
+            const isActive=m.phone===user.phone;
+            const recs=DB.get("hvng_records_"+m.phone)||[];
+            return(
+              <div key={m.phone} style={{...S.card,display:"flex",gap:12,alignItems:"center",marginBottom:8,cursor:isActive?"default":"pointer",border:isActive?"1.5px solid #BBF7D0":"1px solid #EAE8E3",background:isActive?"#F0FDF4":"#fff"}}
+                onClick={()=>!isActive&&onSwitch(m)}>
+                <div style={{width:42,height:42,borderRadius:11,background:isActive?"linear-gradient(135deg,#14532D,#16A34A)":"linear-gradient(135deg,#E5E2DB,#D6D3CE)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:14,color:isActive?"#fff":"#78716C",flex:"none"}}>
+                  {m.name.split(" ").map(w=>w[0]).join("").slice(0,2)}
+                </div>
+                <div style={{flex:1}}>
+                  <div style={{fontWeight:700,fontSize:14,display:"flex",alignItems:"center",gap:6}}>
+                    {m.name}
+                    {isActive&&<span style={{fontSize:9,background:"#14532D",color:"#fff",padding:"2px 6px",borderRadius:99,fontWeight:600,letterSpacing:0.5}}>ACTIVE</span>}
+                  </div>
+                  <div style={{fontSize:11,color:"#78716C",marginTop:1}}>
+                    {m.bloodGroup} · {m.genotype} · {m.isFamily?m.relation:"Primary account"}
+                  </div>
+                  <div style={{fontSize:11,color:"#A8A29E",marginTop:1}}>{recs.length} record{recs.length!==1?"s":""}</div>
+                </div>
+                {!isActive&&<span style={{fontSize:13,color:"#A8A29E"}}>Switch →</span>}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Add member */}
+        {!adding?(
+          <button style={{...S.btnG,background:"#F0FDF4",color:G,boxShadow:"none",border:"1.5px dashed #BBF7D0",marginBottom:10}} onClick={()=>setAdding(true)}>+ Add Family Member</button>
+        ):(
+          <div style={{...S.card,marginBottom:10,border:"1.5px solid #BBF7D0",background:"#F0FDF4"}}>
+            <div style={{fontWeight:700,fontSize:14,marginBottom:14,color:G}}>New Family Member</div>
+            <Fl label="Full Name *"><input style={S.inp} placeholder="e.g. Chidi Okonkwo" value={f.name} onChange={e=>upd("name",e.target.value)}/></Fl>
+            <Fl label="Date of Birth *"><input type="date" style={S.inp} value={f.dob} onChange={e=>upd("dob",e.target.value)}/></Fl>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+              <Fl label="Relationship"><select style={S.inp} value={f.relation} onChange={e=>upd("relation",e.target.value)}>{relations.map(r=><option key={r}>{r}</option>)}</select></Fl>
+              <Fl label="Gender"><select style={S.inp} value={f.gender} onChange={e=>upd("gender",e.target.value)}><option value="F">Female</option><option value="M">Male</option></select></Fl>
+              <Fl label="Blood Group"><select style={S.inp} value={f.bloodGroup} onChange={e=>upd("bloodGroup",e.target.value)}>{["A+","A-","B+","B-","AB+","AB-","O+","O-"].map(o=><option key={o}>{o}</option>)}</select></Fl>
+              <Fl label="Genotype"><select style={S.inp} value={f.genotype} onChange={e=>upd("genotype",e.target.value)}>{["AA","AS","SS","AC","SC"].map(o=><option key={o}>{o}</option>)}</select></Fl>
+            </div>
+            <Fl label="Allergies"><input style={S.inp} placeholder="e.g. Penicillin or None known" value={f.allergies} onChange={e=>upd("allergies",e.target.value)}/></Fl>
+            <div style={{display:"flex",gap:8,marginTop:6}}>
+              <button style={{...S.btnG,flex:1}} onClick={addMember}>Create Folder</button>
+              <button style={{...S.btnG,flex:1,background:"#F3F1EC",color:"#57534E",boxShadow:"none"}} onClick={()=>setAdding(false)}>Cancel</button>
+            </div>
+          </div>
+        )}
+        <button style={{...S.btnG,background:"#F3F1EC",color:"#57534E",boxShadow:"none"}} onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+
 // ── LANDING ───────────────────────────────────────────────────────
 function Landing({ctx}){
+  const [active,setActive]=useState(null);
+  const [hovered,setHovered]=useState(null);
+  const [demoMode]=useState(()=>DB.get("hvng_demo_mode")!==false);
+
+  const portals=[
+    {id:"pt",label:"Patient",sub:"My Health Folder",idx:"01",
+     bg:"linear-gradient(145deg,#1C2B1E 0%,#0E1610 100%)",
+     accent:"#3D7A52",glow:"rgba(61,122,82,0.28)",border:"rgba(61,122,82,0.2)",
+     rotate:"-2.5deg",ox:"-10px",oy:"10px",
+     headline:"Your health,
+your record.",
+     desc:"A complete picture of your health - visits, medications, lab results in plain English - always in your pocket.",
+     features:["Plain-language lab results","Medication tracker & photo scan","HMO card, always accessible","Share records in one tap","Works without internet"],
+     cta:"Open My Health Folder",note:"Login with phone number",
+     action:()=>ctx.go("pt-login"),
+     icon:<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="6.5" r="3.5" stroke="currentColor" strokeWidth="1.2"/><path d="M2.5 18c0-4.142 3.358-7.5 7.5-7.5s7.5 3.358 7.5 7.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+    },
+    {id:"dr",label:"Clinician",sub:"Doctor Dashboard",idx:"02",
+     bg:"linear-gradient(145deg,#1A2232 0%,#0E1420 100%)",
+     accent:"#4A7BB5",glow:"rgba(74,123,181,0.28)",border:"rgba(74,123,181,0.2)",
+     rotate:"0.5deg",ox:"0px",oy:"0px",
+     headline:"Every patient.
+One place.",
+     desc:"Access complete patient histories, document consultations with AI, generate referral letters and clinical summaries in seconds.",
+     features:["AI-powered clinical summaries","Structured consultation notes","One-tap referral letters","Patient access via secure code","MDCN verified portal"],
+     cta:"Enter Clinician Portal",note:"MDCN registration required",
+     action:()=>ctx.go("dr-login"),
+     icon:<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" strokeWidth="1.2"/><path d="M10 7v6M7 10h6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+    },
+    {id:"lab",label:"Laboratory",sub:"Diagnostics Portal",idx:"03",
+     bg:"linear-gradient(145deg,#261C10 0%,#160F08 100%)",
+     accent:"#B5834A",glow:"rgba(181,131,74,0.28)",border:"rgba(181,131,74,0.2)",
+     rotate:"2.5deg",ox:"10px",oy:"10px",
+     headline:"Results posted.
+Records updated.",
+     desc:"Post structured diagnostic results directly to patient records with AI-assisted data entry. All standard Nigerian formats supported.",
+     features:["AI auto-fills from results","Malaria, FBC, Blood Sugar","Urinalysis, Lipid, Typhoid","Faecal analysis","CAC verified labs only"],
+     cta:"Enter Lab Portal",note:"CAC registration required",
+     action:()=>ctx.go("lab-login"),
+     icon:<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M7.5 3v8L3 17h14l-4.5-6V3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/><path d="M7.5 3h5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/><circle cx="8.5" cy="13" r="1" fill="currentColor"/><circle cx="12" cy="15" r="1" fill="currentColor"/></svg>
+    },
+  ];
+
+  const handleSelect=(id)=>setActive(active===id?null:id);
+  const loadDemo=()=>{
+    const u=DB.get("hvng_users")?.[0];
+    if(u){ctx.setUser(u);ctx.go("pt-app","dashboard");}
+    else{ctx.go("pt-login");}
+    ctx.flash("Exploring in demo mode","info",3000);
+  };
+
   return(
-    <div style={{minHeight:"100vh",display:"flex",flexDirection:"column",background:"#FAFAF7",fontFamily:"'DM Sans',system-ui,sans-serif"}}>
-      {/* Hero */}
-      <div style={{background:"linear-gradient(160deg,#0A3320 0%,#14532D 60%,#1a5c35 100%)",padding:"52px 24px 44px",textAlign:"center",color:"#fff",position:"relative",overflow:"hidden"}}>
-        <div style={{position:"absolute",top:-60,right:-60,width:220,height:220,borderRadius:"50%",background:"rgba(255,255,255,.04)"}}/>
-        <div style={{position:"absolute",bottom:-40,left:-40,width:160,height:160,borderRadius:"50%",background:"rgba(255,255,255,.03)"}}/>
-        <div style={{position:"absolute",top:30,left:20,width:60,height:60,borderRadius:"50%",background:"rgba(234,179,8,.08)"}}/>
-        <div style={{position:"relative",zIndex:1}}>
-          <div style={{display:"inline-flex",alignItems:"center",gap:8,background:"rgba(234,179,8,.15)",border:"1px solid rgba(234,179,8,.3)",borderRadius:99,padding:"5px 14px",marginBottom:20}}>
-            <div style={{width:7,height:7,borderRadius:"50%",background:"#EAB308"}}/>
-            <span style={{fontSize:11,fontWeight:700,color:"#FEF08A",letterSpacing:1}}>YOUR HEALTH STORY, ALWAYS WITH YOU</span>
+    <div style={{minHeight:"100vh",background:"#080807",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#EDE9E0",overflowX:"hidden",position:"relative"}}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@400;500;600&display=swap');
+      .hv-card{position:absolute;width:88%;max-width:440px;border-radius:20px;cursor:pointer;will-change:transform,box-shadow;}
+      .hv-feat{display:flex;align-items:center;gap:10px;padding:5px 0;opacity:0;transform:translateX(-8px);transition:opacity 0.3s ease,transform 0.3s ease;}
+      .hv-feat.vis{opacity:1;transform:translateX(0);}
+      .hv-cta{width:100%;padding:13px 20px;border:none;border-radius:10px;font-family:inherit;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s,transform 0.2s;color:#EDE9E0;display:flex;align-items:center;justify-content:space-between;}
+      .hv-cta:hover{opacity:0.88;transform:translateY(-1px);}
+      `}</style>
+
+      {/* Ambient glow */}
+      <div style={{position:"fixed",width:500,height:500,top:-150,left:-150,borderRadius:"50%",filter:"blur(100px)",pointerEvents:"none",
+        background:active==="pt"?"rgba(61,122,82,0.11)":active==="dr"?"rgba(74,123,181,0.09)":active==="lab"?"rgba(181,131,74,0.09)":"rgba(61,122,82,0.05)",
+        transition:"background 1.2s ease"}}/>
+
+      {/* Header */}
+      <header style={{padding:"36px 26px 0",position:"relative",zIndex:10}}>
+        <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:48}}>
+          <div style={{width:28,height:28,borderRadius:7,background:"rgba(237,233,224,0.06)",border:"1px solid rgba(237,233,224,0.1)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1.5v3M6 7.5v3M1.5 6h3M7.5 6h3" stroke="#EDE9E0" strokeWidth="1" strokeLinecap="round"/><circle cx="6" cy="6" r="1.5" fill="#EDE9E0"/></svg>
           </div>
-          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:48,fontWeight:900,lineHeight:1.05,marginBottom:12,letterSpacing:-1}}>Health<span style={{color:"#EAB308"}}>Vault</span><br/><span style={{color:"#86EFAC"}}>NG</span></div>
-          <div style={{fontSize:15,opacity:.85,maxWidth:300,margin:"0 auto 24px",lineHeight:1.8,fontWeight:400}}>
-            Your health story, always with you.<br/>Share with any doctor, anywhere in Nigeria.
-          </div>
-          <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
-            {Object.values(CARE).map(c=><div key={c.label} style={{background:"rgba(255,255,255,.1)",color:"rgba(255,255,255,.85)",fontSize:11,fontWeight:600,padding:"5px 13px",borderRadius:99,border:"1px solid rgba(255,255,255,.12)"}}>{c.icon} {c.label}</div>)}
-          </div>
+          <span style={{fontFamily:"'Cormorant Garant',serif",fontSize:18,fontWeight:400,letterSpacing:"0.01em"}}>HealthVault <em style={{color:"rgba(237,233,224,0.35)",fontStyle:"italic"}}>NG</em></span>
+          {demoMode&&<div onClick={loadDemo} style={{marginLeft:"auto",fontSize:10,letterSpacing:"0.12em",textTransform:"uppercase",color:"rgba(237,233,224,0.3)",border:"1px solid rgba(237,233,224,0.1)",borderRadius:99,padding:"4px 10px",cursor:"pointer",fontWeight:500}}>Try Demo</div>}
         </div>
-      </div>
-
-      {/* Portal cards */}
-      <div style={{flex:1,padding:"24px 18px 36px",maxWidth:480,margin:"0 auto",width:"100%"}}>
-        <div style={{fontSize:11,fontWeight:700,color:"#A8A29E",letterSpacing:1.5,textAlign:"center",marginBottom:18,textTransform:"uppercase"}}>Who are you?</div>
-        {[
-          {
-            icon:"👤",title:"I am a Patient",sub:"Your health story",
-            desc:"See your full health history, medications and test results - all in one place.",
-            color:G,gradient:"linear-gradient(135deg,#14532D,#16A34A)",
-            action:()=>ctx.go("pt-login"),cta:"Open my health folder →"
-          },
-          {
-            icon:"🩺",title:"I am a Doctor",sub:"Clinician Dashboard",
-            desc:"Access your patients' records, write visit notes and generate referral letters.",
-            color:GB,gradient:"linear-gradient(135deg,#1D4ED8,#3B82F6)",
-            action:()=>ctx.go("dr-login"),cta:"Go to clinician portal →"
-          },
-          {
-            icon:"🔬",title:"I am a Lab",sub:"Laboratory Dashboard",
-            desc:"Post test results directly into patient records. Fast, paperless and accurate.",
-            color:GL,gradient:"linear-gradient(135deg,#B45309,#D97706)",
-            action:()=>ctx.go("lab-login"),cta:"Go to lab portal →"
-          },
-        ].map(item=>(
-          <div key={item.title} style={{background:"#fff",borderRadius:18,cursor:"pointer",marginBottom:14,overflow:"hidden",boxShadow:"0 2px 16px rgba(0,0,0,.06)",border:"1px solid #F0EDE8",transition:"transform .1s"}} onClick={item.action}>
-            <div style={{background:item.gradient,padding:"18px 20px 16px",display:"flex",alignItems:"center",gap:14}}>
-              <div style={{width:46,height:46,borderRadius:13,background:"rgba(255,255,255,.18)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:24,flex:"none"}}>{item.icon}</div>
-              <div>
-                <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:19,fontWeight:700,color:"#fff",lineHeight:1.1}}>{item.title}</div>
-                <div style={{fontSize:11,color:"rgba(255,255,255,.65)",fontWeight:600,marginTop:3,letterSpacing:.3}}>{item.sub}</div>
-              </div>
-            </div>
-            <div style={{padding:"13px 20px 6px",fontSize:13,color:"#57534E",lineHeight:1.7}}>{item.desc}</div>
-            <div style={{padding:"4px 20px 16px",color:item.color,fontSize:13,fontWeight:700}}>{item.cta}</div>
-          </div>
-        ))}
-
-        {/* Trust bar - short and visual, not wordy */}
-        <div style={{background:"#fff",borderRadius:16,border:"1px solid #EAE8E3",padding:"14px 20px",display:"flex",justifyContent:"space-around",textAlign:"center"}}>
-          {[
-            {icon:"🔒",label:"Private"},
-            {icon:"📵",label:"No adverts"},
-            {icon:"📱",label:"Works offline"},
-            {icon:"🔗",label:"You control access"},
-          ].map(({icon,label})=>(
-            <div key={label} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
-              <div style={{fontSize:20}}>{icon}</div>
-              <div style={{fontSize:10,color:"#78716C",fontWeight:600}}>{label}</div>
-            </div>
+        <p style={{fontSize:10,letterSpacing:"0.22em",textTransform:"uppercase",color:"rgba(237,233,224,0.25)",fontWeight:500,marginBottom:14}}>Patient Health Platform · Nigeria</p>
+        <h1 style={{fontFamily:"'Cormorant Garant',serif",fontSize:"clamp(36px,10vw,58px)",fontWeight:300,lineHeight:1.04,letterSpacing:"-0.025em",color:"#EDE9E0",marginBottom:18}}>
+          Health records,<br/><span style={{fontStyle:"italic",color:"rgba(237,233,224,0.35)"}}>controlled by you.</span>
+        </h1>
+        <p style={{fontSize:13,color:"rgba(237,233,224,0.35)",lineHeight:1.8,maxWidth:320,marginBottom:20}}>Shared seamlessly between patients, clinicians and laboratories across Nigeria.</p>
+        <div style={{display:"flex",gap:6,flexWrap:"wrap"}}>
+          {["Offline-first","NHIA compatible","NDPA compliant","Any phone"].map(t=>(
+            <span key={t} style={{fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase",color:"rgba(237,233,224,0.22)",padding:"3px 9px",border:"1px solid rgba(237,233,224,0.07)",borderRadius:99,fontWeight:500}}>{t}</span>
           ))}
         </div>
+      </header>
 
-        <div style={{textAlign:"center",marginTop:18,fontSize:11,color:"#A8A29E",lineHeight:1.8}}>
-          Built for Nigeria · Compliant with NDPA 2023<br/>
-          Your data stays on your device
-        </div>
+      {/* Select label */}
+      <div style={{padding:"34px 26px 0",fontSize:10,letterSpacing:"0.2em",textTransform:"uppercase",color:"rgba(237,233,224,0.18)",fontWeight:500,position:"relative",zIndex:10,display:"flex",alignItems:"center",gap:12}}>
+        <div style={{width:24,height:"1px",background:"rgba(237,233,224,0.12)"}}/>Select your portal
+        <div style={{width:24,height:"1px",background:"rgba(237,233,224,0.12)"}}/>
+      </div>
+
+      {/* Floating cards */}
+      <div style={{position:"relative",height:active?640:390,marginTop:20,display:"flex",justifyContent:"center",transition:"height 0.7s cubic-bezier(0.16,1,0.3,1)"}}>
+        {portals.map((p,idx)=>{
+          const isActive=active===p.id;
+          const isHov=hovered===p.id&&!active;
+          const isOther=active&&!isActive;
+          const stackY=[210,140,70];
+          const stackScale=[0.91,0.95,1.0];
+          const stackZ=[1,2,3];
+          let ty=stackY[idx],tx=p.ox,rot=p.rotate,sc=stackScale[idx],zi=stackZ[idx],op=1,bl=0;
+          if(isHov){ty=stackY[idx]-22;sc=stackScale[idx]+0.02;zi=10;}
+          if(isActive){ty=0;tx="0px";rot="0deg";sc=1;zi=20;}
+          else if(isOther){tx=idx===0?"-105%":"105%";rot=idx===0?"-8deg":"8deg";ty=180;sc=0.84;zi=1;op=0.4;bl=2;}
+          return(
+            <div key={p.id} className="hv-card" onClick={()=>handleSelect(p.id)}
+              onMouseEnter={()=>!active&&setHovered(p.id)} onMouseLeave={()=>setHovered(null)}
+              style={{transform:"translateY("+ty+"px) translateX("+tx+") rotate("+rot+") scale("+sc+")",zIndex:zi,opacity:op,filter:bl?"blur("+bl+"px)":"none",
+                transition:"all 0.7s cubic-bezier(0.16,1,0.3,1)",
+                boxShadow:isActive?"0 32px 80px rgba(0,0,0,0.65), 0 0 0 1px "+p.border+", 0 0 80px "+p.glow:
+                  isHov?"0 24px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.09)":
+                  "0 "+(idx*8+10)+"px "+(idx*12+24)+"px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.055)"}}>
+              <div style={{background:p.bg,borderRadius:20,border:"1px solid rgba(255,255,255,0.07)",overflow:"hidden",position:"relative"}}>
+                {/* Top accent */}
+                <div style={{height:2,background:isActive?p.accent:"transparent",transition:"background 0.5s ease"}}/>
+                {/* Sheen */}
+                <div style={{position:"absolute",inset:0,background:"linear-gradient(180deg,rgba(255,255,255,0.04) 0%,transparent 40%)",pointerEvents:"none",borderRadius:20}}/>
+                {/* Header */}
+                <div style={{padding:"22px 22px 18px",display:"flex",alignItems:"flex-start",justifyContent:"space-between",gap:14,position:"relative",zIndex:2}}>
+                  <div style={{flex:1}}>
+                    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:12}}>
+                      <div style={{width:34,height:34,borderRadius:9,background:isActive?p.accent+"30":"rgba(237,233,224,0.05)",border:"1px solid "+(isActive?p.accent+"45":"rgba(237,233,224,0.07)"),display:"flex",alignItems:"center",justifyContent:"center",color:isActive?p.accent:"rgba(237,233,224,0.35)",flex:"none",transition:"all 0.5s ease"}}>{p.icon}</div>
+                      <div>
+                        <div style={{fontFamily:"'Cormorant Garant',serif",fontSize:isActive?26:19,fontWeight:400,letterSpacing:"-0.01em",color:"#EDE9E0",lineHeight:1,transition:"font-size 0.5s cubic-bezier(0.16,1,0.3,1)"}}>{p.label}</div>
+                        <div style={{fontSize:10,letterSpacing:"0.1em",textTransform:"uppercase",color:isActive?p.accent:"rgba(237,233,224,0.22)",marginTop:3,fontWeight:500,transition:"color 0.4s ease"}}>{p.sub}</div>
+                      </div>
+                    </div>
+                    <div style={{fontFamily:"'Cormorant Garant',serif",fontSize:isActive?"clamp(22px,5vw,30px)":14,fontWeight:300,lineHeight:1.15,color:isActive?"#EDE9E0":"rgba(237,233,224,0.5)",whiteSpace:"pre-line",transition:"all 0.5s ease",letterSpacing:"-0.01em"}}>{p.headline}</div>
+                  </div>
+                  <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:8,flex:"none"}}>
+                    <span style={{fontSize:11,letterSpacing:"0.1em",color:"rgba(237,233,224,0.15)",fontWeight:500}}>{p.idx}</span>
+                    <div style={{width:26,height:26,borderRadius:"50%",background:isActive?p.accent:"rgba(237,233,224,0.05)",border:"1px solid "+(isActive?p.accent:"rgba(237,233,224,0.07)"),display:"flex",alignItems:"center",justifyContent:"center",color:isActive?"#EDE9E0":"rgba(237,233,224,0.28)",fontSize:14,transform:isActive?"rotate(90deg)":"rotate(0deg)",transition:"all 0.5s cubic-bezier(0.16,1,0.3,1)"}}>›</div>
+                  </div>
+                </div>
+                {/* Expand */}
+                <div style={{maxHeight:isActive?500:0,overflow:"hidden",transition:"max-height 0.65s cubic-bezier(0.16,1,0.3,1)",position:"relative",zIndex:2}}>
+                  <div style={{padding:"0 22px 22px"}}>
+                    <div style={{height:1,background:"rgba(237,233,224,0.07)",marginBottom:14}}/>
+                    <p style={{fontSize:12,color:"rgba(237,233,224,0.45)",lineHeight:1.8,marginBottom:18,maxWidth:340}}>{p.desc}</p>
+                    <div style={{marginBottom:20}}>
+                      {p.features.map((f,fi)=>(
+                        <div key={fi} className={"hv-feat"+(isActive?" vis":"")} style={{transitionDelay:isActive?(fi*0.07+0.1)+"s":"0s"}}>
+                          <div style={{width:5,height:5,borderRadius:"50%",background:p.accent,flex:"none"}}/>
+                          <span style={{fontSize:12,color:"rgba(237,233,224,0.5)",letterSpacing:"0.01em"}}>{f}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <button className="hv-cta" style={{background:p.accent}} onClick={(e)=>{e.stopPropagation();p.action();}}>
+                      <span>{p.cta}</span><span style={{fontSize:16,opacity:0.7}}>→</span>
+                    </button>
+                    <p style={{fontSize:10,color:"rgba(237,233,224,0.2)",marginTop:8,letterSpacing:"0.05em"}}>{p.note}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Back hint */}
+      {active&&<div style={{textAlign:"center",position:"relative",zIndex:10,marginTop:16,fontSize:11,color:"rgba(237,233,224,0.18)",letterSpacing:"0.1em",textTransform:"uppercase",cursor:"pointer"}} onClick={()=>setActive(null)}>← All portals</div>}
+
+      {/* Stats */}
+      <div style={{padding:"36px 26px 44px",position:"relative",zIndex:10,display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:1,borderTop:"1px solid rgba(237,233,224,0.04)",marginTop:16}}>
+        {[["100%","Patient controlled"],["Free","No cost to patients"],["Offline","Works without data"]].map(([val,label],i)=>(
+          <div key={i} style={{padding:"14px 0",borderRight:i<2?"1px solid rgba(237,233,224,0.04)":"none",paddingRight:i<2?14:0,paddingLeft:i>0?14:0}}>
+            <div style={{fontFamily:"'Cormorant Garant',serif",fontSize:20,fontWeight:300,color:"#EDE9E0",letterSpacing:"-0.01em",marginBottom:4}}>{val}</div>
+            <div style={{fontSize:10,letterSpacing:"0.08em",textTransform:"uppercase",color:"rgba(237,233,224,0.22)",fontWeight:500}}>{label}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -1317,6 +1658,8 @@ function PtRegister({ctx}){
 // ── PATIENT APP ───────────────────────────────────────────────────
 function PtApp({ctx}){
   const u=ctx.user;
+  const [showFamily,setShowFamily]=useState(false);
+  const familyMembers=(DB.get("hvng_family_"+(u?.phone||""))||[]);
   const notifs=DB.get(`hvng_notif_${u?.phone}`)||[];
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -1329,6 +1672,10 @@ function PtApp({ctx}){
         <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>My Health Folder</div></div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
           <div title="AI Summary" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("summary")}>📊</div>
+          <div title="Family Folder" style={{cursor:"pointer",fontSize:18,position:"relative"}} onClick={()=>setShowFamily(true)}>
+            👨‍👩‍👧
+            {familyMembers.length>0&&<div style={{position:"absolute",top:-2,right:-2,background:"#16A34A",color:"#fff",fontSize:8,fontWeight:700,width:13,height:13,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center"}}>{familyMembers.length}</div>}
+          </div>
           <div title="Emergency Card" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("emergency")}>🆘</div>
           <div style={{position:"relative",cursor:"pointer"}} onClick={()=>ctx.setModal("notif")}>
             <span style={{fontSize:20}}>🔔</span>
@@ -1349,6 +1696,8 @@ function PtApp({ctx}){
 function PatientDashboard({ctx,recs}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
+  const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);
+  const toggleLiteracy=()=>{const n=!literacy;setLiteracy(n);DB.set("hvng_literacy",n);};
   const age=Math.floor((Date.now()-new Date(u.dob))/(365.25*24*60*60*1000));
   const chronic=[...new Set(recs.filter(r=>r.careType==="CHRONIC"||r.fields?.condition).map(r=>r.fields?.condition||r.fields?.diagnosis).filter(Boolean))].slice(0,4);
   const isPregnant=recs.some(r=>r.careType==="MATERNITY"&&new Date(r.date)>new Date(Date.now()-280*24*60*60*1000));
@@ -1481,7 +1830,7 @@ function PatientDashboard({ctx,recs}){
           <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>{u.name}</div>
           <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>
             <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Member ID</div><div style={{fontSize:13,fontWeight:800,letterSpacing:.5,marginTop:1}}>{u.hmo.memberId}</div></div>
-            <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Plan</div><div style={{fontSize:12,fontWeight:700,marginTop:1}}>{u.hmo.plan||"—"}</div></div>
+            <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Plan</div><div style={{fontSize:12,fontWeight:700,marginTop:1}}>{u.hmo.plan||"-"}</div></div>
             {u.hmo.expiry&&<div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase"}}>Expires</div><div style={{fontSize:12,fontWeight:700,marginTop:1}}>{u.hmo.expiry}</div></div>}
           </div>
         </div>
@@ -1498,7 +1847,17 @@ function PatientDashboard({ctx,recs}){
       <div style={{fontWeight:700,fontSize:12,marginBottom:4,color:"#92400E"}}>🆘 Emergency Contact</div>
       <div style={{fontSize:13,color:"#57534E"}}><strong>{u.nokName}</strong> ({u.nokRelation}) · {u.nokPhone}</div>
     </div>
-    {showHMO&&<HMOCardModal user={u} onClose={()=>setShowHMO(false)} flash={ctx.flash}
+    <div style={{...S.card,background:"#F0F4FF",border:"1px solid #BFDBFE",marginBottom:14,display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+      <div>
+        <div style={{fontWeight:700,fontSize:12,color:"#1E40AF"}}>📖 Simple Language Mode</div>
+        <div style={{fontSize:11,color:"#3B82F6",marginTop:2}}>{literacy?"Medical terms simplified":"Tap to simplify medical language"}</div>
+      </div>
+      <div onClick={toggleLiteracy} style={{width:44,height:24,borderRadius:99,background:literacy?"#1D4ED8":"#D1D5DB",position:"relative",cursor:"pointer",transition:"background 0.3s",flex:"none"}}>
+        <div style={{width:18,height:18,borderRadius:"50%",background:"#fff",position:"absolute",top:3,left:literacy?23:3,transition:"left 0.3s",boxShadow:"0 1px 4px rgba(0,0,0,.2)"}}/>
+      </div>
+    </div>
+    {showFamily&&<FamilyModal user={u} onClose={()=>setShowFamily(false)} flash={ctx.flash} onSwitch={(member)=>{ctx.setUser(member);setShowFamily(false);ctx.flash("Switched to "+member.name.split(" ")[0]+"'s folder");}}/> }
+      {showHMO&&<HMOCardModal user={u} onClose={()=>setShowHMO(false)} flash={ctx.flash}
       onSave={(hmo)=>{
         const users=DB.get("hvng_users")||[];
         const updated=users.map(p=>p.phone===u.phone?{...p,hmo}:p);

@@ -1,4 +1,4 @@
-const _blob=new Blob(["<html><head><title>Referral - "+pt.name+"</title>import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ── Storage ───────────────────────────────────────────────────────
 const DB = {
@@ -644,7 +644,7 @@ MDCN: ${doc?.mdcn||"N/A"}`;
 
   const print=()=>{
     if(!reason.trim()) return flash("Please add the reason for referral","err");
-    const _blob=new Blob(["`<html><head><title>Referral — "+pt.name+"</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>${letterText}</pre></body></html>`);
+    const _blob=new Blob(["<html><head><title>Referral — "+pt.name+"</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>${letterText}</pre></body></html>`);
     w.document.close();w.print(],{type:"text/html"});const _url=URL.createObjectURL(_blob);const _a=document.createElement("a");_a.href=_url;_a.download="Referral-"+pt.name.replace(/[^a-zA-Z]/g,"-")+".html";document.body.appendChild(_a);_a.click();setTimeout(()=>{document.body.removeChild(_a);URL.revokeObjectURL(_url);},2000);
   };
 

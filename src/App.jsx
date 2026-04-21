@@ -1308,7 +1308,7 @@ function PtRegister({ctx}){
         </>)}
       </div>
 
-      <div style={{display:"none"}}><!-- placeholder --></div>
+      <div style={{display:"none"}}></div>
       <button style={{...S.btnG,marginTop:4}} onClick={submit}>Create My Health Folder</button>
     </div>
     <Back onClick={()=>ctx.go("pt-login")}/>

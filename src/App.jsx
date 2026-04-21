@@ -24,10 +24,10 @@ function pushNotif(phone,message,type="result",from=""){
 function seedDemo(){
   if(DB.get("hvng_seeded")) return;
   const patients=[
-    {phone:"08012345678",name:"Adaeze Okonkwo",dob:"1990-03-15",gender:"F",bloodGroup:"O+",genotype:"AA",nhia:"NHIA/2024/001234",nokName:"Chukwuemeka Okonkwo",nokPhone:"08098765432",nokRelation:"Husband",address:"14 Bode Thomas St, Surulere, Lagos",occupation:"Teacher",allergies:"Penicillin",hmo:{provider:"Hygeia HMO",plan:"Silver",memberId:"HYG/2024/0089234",employerGroup:"Lagos State Civil Service",expiry:"2025-12-31",dependants:"Chukwuemeka Okonkwo (Spouse)"},vaccinations:[{id:1,name:"Yellow Fever",date:"2023-06-01",facility:"LUTH",batchNo:"YF2023A",nextDue:"2033-06-01"},{id:2,name:"Hepatitis B",date:"2022-03-15",facility:"Medicare Clinic",batchNo:"HB22B",nextDue:""},{id:3,name:"Tetanus Toxoid",date:"2024-01-10",facility:"Lagos Island General",batchNo:"TT24C",nextDue:"2029-01-10"}]},
-    {phone:"08023456789",name:"Babatunde Fashola",dob:"1978-07-22",gender:"M",bloodGroup:"A+",genotype:"AS",nhia:"NHIA/2023/005678",nokName:"Kemi Fashola",nokPhone:"08111234567",nokRelation:"Wife",address:"22 Allen Ave, Ikeja, Lagos",occupation:"Civil Servant",allergies:"None known",hmo:{provider:"Reliance HMO",plan:"Reli-Health Plus",memberId:"REL/2023/0045678",employerGroup:"Federal Civil Service Commission",expiry:"2026-03-31",dependants:"Kemi Fashola (Spouse), Tolu Fashola (Child)"},vaccinations:[{id:1,name:"COVID-19 (AZ)",date:"2022-05-10",facility:"LASUTH",batchNo:"COV22A",nextDue:""}]},
+    {phone:"08012345678",name:"Adaeze Okonkwo",dob:"1990-03-15",gender:"F",bloodGroup:"O+",genotype:"AA",nhia:"NHIA/2024/001234",hmo:{provider:"Hygeia HMO",plan:"Silver",memberId:"HYG/2024/0089234",employerGroup:"Lagos State Government",expiry:"2025-12-31",dependants:"Chukwuemeka Okonkwo (Spouse)"},nokName:"Chukwuemeka Okonkwo",nokPhone:"08098765432",nokRelation:"Husband",address:"14 Bode Thomas St, Surulere, Lagos",occupation:"Teacher",allergies:"Penicillin",hmo:{provider:"Hygeia HMO",plan:"Silver",memberId:"HYG/2024/0089234",employerGroup:"Lagos State Civil Service",expiry:"2025-12-31",dependants:"Chukwuemeka Okonkwo (Spouse)"},vaccinations:[{id:1,name:"Yellow Fever",date:"2023-06-01",facility:"LUTH",batchNo:"YF2023A",nextDue:"2033-06-01"},{id:2,name:"Hepatitis B",date:"2022-03-15",facility:"Medicare Clinic",batchNo:"HB22B",nextDue:""},{id:3,name:"Tetanus Toxoid",date:"2024-01-10",facility:"Lagos Island General",batchNo:"TT24C",nextDue:"2029-01-10"}]},
+    {phone:"08023456789",name:"Babatunde Fashola",dob:"1978-07-22",gender:"M",bloodGroup:"A+",genotype:"AS",nhia:"NHIA/2023/005678",hmo:{provider:"Reliance HMO",plan:"Reli-Health Plus",memberId:"REL/2023/0045678",employerGroup:"Lagos Civil Service",expiry:"2025-12-31",dependants:"Kemi Fashola (Spouse)"},nokName:"Kemi Fashola",nokPhone:"08111234567",nokRelation:"Wife",address:"22 Allen Ave, Ikeja, Lagos",occupation:"Civil Servant",allergies:"None known",hmo:{provider:"Reliance HMO",plan:"Reli-Health Plus",memberId:"REL/2023/0045678",employerGroup:"Federal Civil Service Commission",expiry:"2026-03-31",dependants:"Kemi Fashola (Spouse), Tolu Fashola (Child)"},vaccinations:[{id:1,name:"COVID-19 (AZ)",date:"2022-05-10",facility:"LASUTH",batchNo:"COV22A",nextDue:""}]},
     {phone:"08034567890",name:"Ngozi Eze",dob:"1995-11-08",gender:"F",bloodGroup:"B+",genotype:"AA",nhia:"NHIA/2024/009012",nokName:"Chidi Eze",nokPhone:"08155566778",nokRelation:"Brother",address:"5 Obi St, Enugu",occupation:"Nurse",allergies:"Sulfonamides",vaccinations:[{id:1,name:"Hepatitis B",date:"2021-09-01",facility:"UNTH Enugu",batchNo:"HB21C",nextDue:""}]},
-    {phone:"08045678901",name:"Ibrahim Musa",dob:"1965-02-14",gender:"M",bloodGroup:"AB+",genotype:"AA",nhia:"NHIA/2022/003456",nokName:"Hauwa Musa",nokPhone:"08033344556",nokRelation:"Wife",address:"Block 7, Gwarinpa Estate, Abuja",occupation:"Retired",allergies:"Aspirin",vaccinations:[]},
+    {phone:"08045678901",name:"Ibrahim Musa",dob:"1965-02-14",gender:"M",bloodGroup:"AB+",genotype:"AA",nhia:"NHIA/2022/003456",hmo:{provider:"AXA Mansard Health",plan:"PreferredCare",memberId:"AXA/2022/0078901",employerGroup:"Federal Government Retirees",expiry:"2025-12-31",dependants:"Hauwa Musa (Spouse)"},nokName:"Hauwa Musa",nokPhone:"08033344556",nokRelation:"Wife",address:"Block 7, Gwarinpa Estate, Abuja",occupation:"Retired",allergies:"Aspirin",vaccinations:[]},
     {phone:"08056789012",name:"Chidinma Okafor",dob:"2001-06-30",gender:"F",bloodGroup:"O-",genotype:"SC",nhia:"NHIA/2025/011234",nokName:"Mrs. Grace Okafor",nokPhone:"08077788990",nokRelation:"Mother",address:"3 University Rd, Nsukka",occupation:"Student",allergies:"None known",vaccinations:[{id:1,name:"Meningitis",date:"2023-08-15",facility:"University Clinic",batchNo:"MEN23D",nextDue:"2028-08-15"}]},
   ];
   DB.set("hvng_users",patients);
@@ -215,12 +215,12 @@ const STATUS_COLOR={Normal:"#16A34A",High:"#DC2626",Low:"#D97706",Positive:"#DC2
 
 // ── Lab test definitions ──────────────────────────────────────────
 const LAB_TESTS={
-  "Malaria Test":{icon:"🦟",formatResult:(f)=>`Test: ${f.testType||"Malaria Parasite"}\nResult: ${f.result||"—"}\nParasite Density: ${f.parasiteDensity||"N/A"}\nMethod: ${f.method||"—"}`},
-  "Full Blood Count":{icon:"🩸",formatResult:(f)=>`Hb: ${f.hb||"—"} g/dL  |  PCV: ${f.pcv||"—"}%  |  WBC: ${f.wbc||"—"} ×10⁹/L\nPlatelets: ${f.platelets||"—"} ×10⁹/L  |  Neutrophils: ${f.neutrophils||"—"}%  |  Lymphocytes: ${f.lymphocytes||"—"}%`},
-  "Blood Sugar":{icon:"🍬",formatResult:(f)=>`Test: ${f.testType||"Blood Sugar"}\nResult: ${f.value||"—"} ${f.unit||"mg/dL"}\nReference: ${f.referenceRange||"—"}\nInterpretation: ${f.interpretation||"—"}`},
-  "Urinalysis":{icon:"🧪",formatResult:(f)=>`Colour: ${f.colour||"—"}  |  Appearance: ${f.appearance||"—"}\nProtein: ${f.protein||"—"}  |  Glucose: ${f.glucose||"—"}  |  Leukocytes: ${f.leukocytes||"—"}\nKetones: ${f.ketones||"—"}  |  Blood: ${f.blood||"—"}  |  Nitrites: ${f.nitrites||"—"}\npH: ${f.ph||"—"}  |  Specific Gravity: ${f.specificGravity||"—"}`},
-  "Lipid Profile":{icon:"💉",formatResult:(f)=>`Total Cholesterol: ${f.totalCholesterol||"—"} mg/dL\nHDL: ${f.hdl||"—"} mg/dL  |  LDL: ${f.ldl||"—"} mg/dL\nTriglycerides: ${f.triglycerides||"—"} mg/dL`},
-  "Typhoid (Widal)":{icon:"🌡️",formatResult:(f)=>`S. Typhi O: ${f.salmonellaTyphi_O||"—"}  |  S. Typhi H: ${f.salmonellaTyphi_H||"—"}\nS. Paratyphi A: ${f.salmonellaParaTyphi_A||"—"}  |  S. Paratyphi B: ${f.salmonellaParaTyphi_B||"—"}\nInterpretation: ${f.interpretation||"—"}`},
+  "Malaria Test":{icon:"🦟",formatResult:(f)=>`Test: ${f.testType||"Malaria Parasite"}\nResult: ${f.result||"-"}\nParasite Density: ${f.parasiteDensity||"N/A"}\nMethod: ${f.method||"-"}`},
+  "Full Blood Count":{icon:"🩸",formatResult:(f)=>`Hb: ${f.hb||"-"} g/dL  |  PCV: ${f.pcv||"-"}%  |  WBC: ${f.wbc||"-"} ×10⁹/L\nPlatelets: ${f.platelets||"-"} ×10⁹/L  |  Neutrophils: ${f.neutrophils||"-"}%  |  Lymphocytes: ${f.lymphocytes||"-"}%`},
+  "Blood Sugar":{icon:"🍬",formatResult:(f)=>`Test: ${f.testType||"Blood Sugar"}\nResult: ${f.value||"-"} ${f.unit||"mg/dL"}\nReference: ${f.referenceRange||"-"}\nInterpretation: ${f.interpretation||"-"}`},
+  "Urinalysis":{icon:"🧪",formatResult:(f)=>`Colour: ${f.colour||"-"}  |  Appearance: ${f.appearance||"-"}\nProtein: ${f.protein||"-"}  |  Glucose: ${f.glucose||"-"}  |  Leukocytes: ${f.leukocytes||"-"}\nKetones: ${f.ketones||"-"}  |  Blood: ${f.blood||"-"}  |  Nitrites: ${f.nitrites||"-"}\npH: ${f.ph||"-"}  |  Specific Gravity: ${f.specificGravity||"-"}`},
+  "Lipid Profile":{icon:"💉",formatResult:(f)=>`Total Cholesterol: ${f.totalCholesterol||"-"} mg/dL\nHDL: ${f.hdl||"-"} mg/dL  |  LDL: ${f.ldl||"-"} mg/dL\nTriglycerides: ${f.triglycerides||"-"} mg/dL`},
+  "Typhoid (Widal)":{icon:"🌡️",formatResult:(f)=>`S. Typhi O: ${f.salmonellaTyphi_O||"-"}  |  S. Typhi H: ${f.salmonellaTyphi_H||"-"}\nS. Paratyphi A: ${f.salmonellaParaTyphi_A||"-"}  |  S. Paratyphi B: ${f.salmonellaParaTyphi_B||"-"}\nInterpretation: ${f.interpretation||"-"}`},
   "Faecal Analysis":{icon:"🧫",formatResult:(f)=>"Colour: "+(f.faecalColour||"--")+"  |  Consistency: "+(f.faecalConsistency||"--")+"\nBlood: "+(f.faecalBlood||"--")+"  |  Mucus: "+(f.faecalMucus||"--")+"\nOva/Parasites: "+(f.ovaParasites||"--")+"  |  Occult Blood: "+(f.occultBlood||"--")+"\nMicroscopy: "+(f.faecalMicroscopy||"--")},
   "Other":{icon:"📋",formatResult:(f)=>"Test: "+(f.testName||"--")+"\n"+(f.results||"--")},
 };
@@ -232,7 +232,7 @@ const QUICK={
     {label:"Malaria",icon:"🦟",fields:{diagnosis:"Malaria (uncomplicated)",malariaRDT:"Positive",treatment:"Artemether-Lumefantrine 80/480mg BD x3 days"}},
     {label:"Typhoid Fever",icon:"🌡️",fields:{diagnosis:"Typhoid Fever",treatment:"Ciprofloxacin 500mg BD x7 days"}},
     {label:"URTI / Cold",icon:"🤧",fields:{diagnosis:"Upper Respiratory Tract Infection",treatment:"Paracetamol 1g TDS + rest"}},
-    {label:"Hypertension",icon:"❤️",fields:{diagnosis:"Hypertension — new presentation",treatment:"Amlodipine 5mg OD started"}},
+    {label:"Hypertension",icon:"❤️",fields:{diagnosis:"Hypertension - new presentation",treatment:"Amlodipine 5mg OD started"}},
     {label:"PUD / Gastritis",icon:"🫃",fields:{diagnosis:"Peptic Ulcer Disease",treatment:"Omeprazole 20mg BD + Metronidazole 400mg TDS x7 days"}},
   ],
   MATERNITY:[
@@ -247,7 +247,7 @@ const QUICK={
     {label:"Diabetes",icon:"🩸",fields:{condition:"Type 2 Diabetes Mellitus",diagnosis:"Diabetes mellitus follow-up"}},
     {label:"Sickle Cell",icon:"🔴",fields:{condition:"Sickle Cell Disease (HbSS)",diagnosis:"Sickle cell disease review"}},
     {label:"Asthma",icon:"💨",fields:{condition:"Bronchial Asthma",currentMeds:"Salbutamol inhaler PRN"}},
-    {label:"HIV / ARV",icon:"💊",fields:{condition:"HIV — on ARV therapy",diagnosis:"HIV/ARV monitoring visit"}},
+    {label:"HIV / ARV",icon:"💊",fields:{condition:"HIV - on ARV therapy",diagnosis:"HIV/ARV monitoring visit"}},
   ],
   EMERGENCY:[
     {label:"RTA",icon:"🚗",fields:{title:"Road Traffic Accident",complaint:"Trauma following road traffic accident."}},
@@ -351,7 +351,7 @@ export default function App(){
       <div style={{flex:1,background:"#F5F4F0",display:"flex",justifyContent:"center"}}>
         <div style={{width:"100%",maxWidth:480,position:"relative"}}>
           <div style={S.page} className="fade">
-            {!online&&<div style={{background:"#FEF3C7",color:"#92400E",padding:"8px 16px",fontSize:12,fontWeight:600,textAlign:"center",borderBottom:"1px solid #FCD34D"}}>⚡ Offline — changes will sync when you reconnect{qCount>0?` (${qCount} queued)`:""}</div>}
+            {!online&&<div style={{background:"#FEF3C7",color:"#92400E",padding:"8px 16px",fontSize:12,fontWeight:600,textAlign:"center",borderBottom:"1px solid #FCD34D"}}>⚡ Offline - changes will sync when you reconnect{qCount>0?` (${qCount} queued)`:""}</div>}
             {MAP[scr]??MAP.landing}
             {toast&&<div style={S.toast(toast.type)}>{toast.type==="ok"?"✓ ":toast.type==="err"?"✗ ":"ℹ "}{toast.msg}</div>}
             {detail&&<RecordDetail rec={detail} ctx={ctx} onClose={()=>setDetail(null)}/>}
@@ -391,7 +391,7 @@ function EmergencyCard({person,recs,onClose}){
   const recent=recs.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,3);
   const meds=[...new Set(recs.filter(r=>r.fields?.currentMeds).map(r=>r.fields.currentMeds))].slice(0,3);
   const share=()=>{
-    const text=`🚨 EMERGENCY HEALTH CARD — ${p.name}\nBlood Group: ${p.bloodGroup} | Genotype: ${p.genotype} | DOB: ${p.dob}\nAllergies: ${p.allergies||"None known"}\nNext of Kin: ${p.nokName||"—"} (${p.nokRelation||"—"}) — ${p.nokPhone||"—"}\nCurrent Medications: ${meds.join(", ")||"None listed"}\nRecent conditions: ${recent.map(r=>r.fields?.diagnosis||r.title).join(", ")}\nNHIA: ${p.nhia||"N/A"}`;
+    const text=`🚨 EMERGENCY HEALTH CARD - ${p.name}\nBlood Group: ${p.bloodGroup} | Genotype: ${p.genotype} | DOB: ${p.dob}\nAllergies: ${p.allergies||"None known"}\nNext of Kin: ${p.nokName||"-"} (${p.nokRelation||"-"}) — ${p.nokPhone||"-"}\nCurrent Medications: ${meds.join(", ")||"None listed"}\nRecent conditions: ${recent.map(r=>r.fields?.diagnosis||r.title).join(", ")}\nNHIA: ${p.nhia||"N/A"}`;
     if(navigator.share){navigator.share({title:"Emergency Health Card",text});}
     else{navigator.clipboard.writeText(text).catch(()=>{});alert("Copied to clipboard!");}
   };
@@ -403,7 +403,7 @@ function EmergencyCard({person,recs,onClose}){
         {[["Blood Group",p.bloodGroup],["Genotype",p.genotype],["NHIA",p.nhia||"N/A"]].map(([l,v])=>(<div key={l}><div style={{fontSize:10,opacity:.7,fontWeight:700}}>{l}</div><div style={{fontSize:18,fontWeight:900}}>{v}</div></div>))}
       </div>
     </div>
-    {[["⚠️ Allergies",p.allergies||"None known"],["💊 Current Meds",meds.join(", ")||"None listed"],["👤 Next of Kin",`${p.nokName||"—"} (${p.nokRelation||"—"}) · ${p.nokPhone||"—"}`]].map(([l,v])=>(
+    {[["⚠️ Allergies",p.allergies||"None known"],["💊 Current Meds",meds.join(", ")||"None listed"],["👤 Next of Kin",`${p.nokName||"-"} (${p.nokRelation||"-"}) · ${p.nokPhone||"-"}`]].map(([l,v])=>(
       <div key={l} style={{marginBottom:12}}><div style={S.lbl}>{l}</div><div style={{fontSize:14,background:"#F9F7F4",padding:"10px 13px",borderRadius:10,lineHeight:1.5}}>{v}</div></div>
     ))}
     {recent.length>0&&(<div style={{marginBottom:12}}><div style={S.lbl}>Recent Conditions</div>
@@ -591,7 +591,7 @@ MDCN No: ${doc?.mdcn||"N/A"}
 
 TO: ${to||"[Receiving Clinician / Specialist]"}
 
-RE: ${pt.name} — ${urgency.toUpperCase()} REFERRAL
+RE: ${pt.name} - ${urgency.toUpperCase()} REFERRAL
 
 Dear Colleague,
 
@@ -605,13 +605,13 @@ Blood Group: ${pt.bloodGroup} | Genotype: ${pt.genotype}
 Phone: ${pt.phone}
 NHIA Number: ${pt.nhia||"N/A"}
 Allergies: ${pt.allergies||"None known"}
-Next of Kin: ${pt.nokName||"Not provided"} (${pt.nokRelation||"—"}) — ${pt.nokPhone||"—"}
+Next of Kin: ${pt.nokName||"Not provided"} (${pt.nokRelation||"-"}) — ${pt.nokPhone||"-"}
 
 REASON FOR REFERRAL
 ${reason||"[Please complete reason for referral]"}
 
 KNOWN CONDITIONS
-${conditions.length?conditions.map(c=>"\u2022 "+c).join("\n"):"None documented"}
+${conditions.length?conditions.map(c=>"• "+c).join("\n"):"None documented"}
 
 CURRENT MEDICATIONS
 ${meds}
@@ -619,7 +619,7 @@ ${meds}
 LAST BLOOD PRESSURE: ${lastBP}
 
 RECENT CLINICAL HISTORY
-${recent.map(r=>""+(r.date)+" | "+(CARE[r.careType]?.label||r.careType)+" | "+(r.title)+"${r.fields?.diagnosis?" — Dx: ${r.fields.diagnosis}`:""}`).join("\n")}
+${recent.map(r=>r.date+" | "+(CARE[r.careType]?.label||r.careType)+" | "+r.title+(r.fields?.diagnosis?" - Dx: "+r.fields.diagnosis:"")).join("\n")}
 
 I would be grateful for your expert opinion and management. Please do not hesitate to contact me should you require any further information.
 
@@ -634,7 +634,7 @@ MDCN: ${doc?.mdcn||"N/A"}`;
   const share=async()=>{
     if(!reason.trim()) return flash("Please add the reason for referral","err");
     if(navigator.share){
-      try{await navigator.share({title:`Referral — ${pt.name}`,text:letterText});}
+      try{await navigator.share({title:`Referral - ${pt.name}`,text:letterText});}
       catch(e){}
     } else {
       navigator.clipboard.writeText(letterText).catch(()=>{});
@@ -644,8 +644,8 @@ MDCN: ${doc?.mdcn||"N/A"}`;
 
   const print=()=>{
     if(!reason.trim()) return flash("Please add the reason for referral","err");
-    const _blob=new Blob(["<html><head><title>Referral — "+pt.name+"</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>${letterText}</pre></body></html>`);
-    w.document.close();w.print(],{type:"text/html"});const _url=URL.createObjectURL(_blob);const _a=document.createElement("a");_a.href=_url;_a.download="Referral-"+pt.name.replace(/[^a-zA-Z]/g,"-")+".html";document.body.appendChild(_a);_a.click();setTimeout(()=>{document.body.removeChild(_a);URL.revokeObjectURL(_url);},2000);
+    const html="<html><head><title>Referral - "+pt.name+"</title><style>body{font-family:Arial,sans-serif;padding:40px;font-size:13px;line-height:1.8;color:#1C1917;max-width:700px;margin:0 auto}h1{font-size:16px;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #14532D;padding-bottom:8px;color:#14532D}pre{white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.8}@media print{@page{margin:2cm}}</style></head><body><pre>"+letterText+"</pre></body></html>";
+    const _blob=new Blob([html],{type:"text/html"});const _url=URL.createObjectURL(_blob);const _a=document.createElement("a");_a.href=_url;_a.download="Referral-"+pt.name.replace(/[^a-zA-Z]/g,"-")+".html";document.body.appendChild(_a);_a.click();setTimeout(()=>{document.body.removeChild(_a);URL.revokeObjectURL(_url);},2000);
   };
 
   return(<Sheet onClose={onClose} title="📋 Referral Letter">
@@ -688,17 +688,17 @@ function shareRecord(rec, patient){
 
   const lines = [
     `━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `HealthVault NG — Health Record`,
+    `HealthVault NG - Health Record`,
     `━━━━━━━━━━━━━━━━━━━━━━━━`,
-    `Patient:  ${patient?.name||"—"}`,
-    `DOB:      ${patient?.dob||"—"}  Blood Group: ${patient?.bloodGroup||"—"}  Genotype: ${patient?.genotype||"—"}`,
+    `Patient:  ${patient?.name||"-"}`,
+    `DOB:      ${patient?.dob||"-"}  Blood Group: ${patient?.bloodGroup||"-"}  Genotype: ${patient?.genotype||"-"}`,
     `NHIA:     ${patient?.nhia||"N/A"}`,
     ``,
     `Record Type: ${ct.label.toUpperCase()}`,
     `Title:       ${rec.title}`,
     `Date:        ${rec.date}`,
-    `Facility:    ${rec.facility||"—"}`,
-    `Added by:    ${rec.addedBy==="doctor"?"Clinician":rec.addedBy==="lab"?"Lab ("+(rec.labName||"—")+")":"Patient"}`,
+    `Facility:    ${rec.facility||"-"}`,
+    `Added by:    ${rec.addedBy==="doctor"?"Clinician":rec.addedBy==="lab"?"Lab ("+(rec.labName||"-")+")":"Patient"}`,
     ``,
   ];
 
@@ -716,14 +716,14 @@ function shareRecord(rec, patient){
   });
 
   lines.push(``, `━━━━━━━━━━━━━━━━━━━━━━━━`);
-  lines.push(`Generated by HealthVault NG — ${new Date().toLocaleDateString("en-NG")}`);
+  lines.push(`Generated by HealthVault NG - ${new Date().toLocaleDateString("en-NG")}`);
   lines.push(`━━━━━━━━━━━━━━━━━━━━━━━━`);
 
   const text = lines.join("\n");
 
   // Try Web Share API (WhatsApp, Messages, etc.)
   if(navigator.share){
-    navigator.share({title:`Health Record — ${rec.title}`, text}).catch(()=>{});
+    navigator.share({title:`Health Record - ${rec.title}`, text}).catch(()=>{});
     } else {
     const url = generatePDFBlob("HealthVault NG - "+rec.title, text);
     const a = document.createElement("a");
@@ -910,7 +910,7 @@ function AISummaryModal({patient,recs,onClose,flash}){
 
 
 // ── TERMS & CONDITIONS ────────────────────────────────────────────
-const TandC_TEXT = `HEALTHVAULT NG — TERMS AND CONDITIONS OF USE
+const TandC_TEXT = `HEALTHVAULT NG - TERMS AND CONDITIONS OF USE
 Version 1.0 | Effective: January 2026
 
 1. ACCEPTANCE OF TERMS
@@ -1000,8 +1000,8 @@ function HMOCardModal({user,onClose,onSave,flash}){
 
   const shareCard = ()=>{
     const text = "HMO CARD - HealthVault NG\n\nPatient: "+user.name+"\nHMO Provider: "+provider+"\nPlan: "+plan+"\nMember ID: "+memberId+"\nEmployer/Group: "+(employerGroup||"N/A")+"\nExpiry: "+(expiry||"N/A")+"\nDependants: "+(dependants||"None listed")+"\n\nNHIA No: "+(user.nhia||"N/A")+"\nBlood Group: "+user.bloodGroup+" | Genotype: "+user.genotype+"\n\nShared via HealthVault NG";
-    if(navigator.share){navigator.share({title:"HMO Card — "+user.name,text}).catch(()=>{});}
-    else{navigator.clipboard.writeText(text).then(()=>flash("HMO card details copied — paste into WhatsApp!","info")).catch(()=>{});}
+    if(navigator.share){navigator.share({title:"HMO Card - "+user.name,text}).catch(()=>{});}
+    else{navigator.clipboard.writeText(text).then(()=>flash("HMO card details copied - paste into WhatsApp!","info")).catch(()=>{});}
   };
 
   return(
@@ -1025,7 +1025,7 @@ function HMOCardModal({user,onClose,onSave,flash}){
               <div style={{fontSize:11,opacity:.8,marginBottom:14}}>NHIA: {user.nhia||"N/A"}</div>
               <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
                 <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Member ID</div><div style={{fontSize:15,fontWeight:800,letterSpacing:1,marginTop:2}}>{memberId}</div></div>
-                <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Plan</div><div style={{fontSize:13,fontWeight:700,marginTop:2}}>{plan||"—"}</div></div>
+                <div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Plan</div><div style={{fontSize:13,fontWeight:700,marginTop:2}}>{plan||"-"}</div></div>
                 {expiry&&<div><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>Valid Until</div><div style={{fontSize:13,fontWeight:700,marginTop:2}}>{expiry}</div></div>}
               </div>
               {employerGroup&&<div style={{marginTop:12,fontSize:11,opacity:.75}}>Group: {employerGroup}</div>}
@@ -1141,7 +1141,7 @@ function Landing({ctx}){
         {[
           {
             icon:"👤",title:"I am a Patient",sub:"Your health story",
-            desc:"See your full health history, medications and test results — all in one place.",
+            desc:"See your full health history, medications and test results - all in one place.",
             color:G,gradient:"linear-gradient(135deg,#14532D,#16A34A)",
             action:()=>ctx.go("pt-login"),cta:"Open my health folder →"
           },
@@ -1214,7 +1214,7 @@ function PtLogin({ctx}){
       <button style={{...S.btnG,opacity:busy?.7:1}} onClick={send} disabled={busy}>{busy?"Sending…":"SEND OTP"}</button>
       <div style={{textAlign:"center",marginTop:16,fontSize:13,color:"#78716C"}}>New user? <span style={{color:G,fontWeight:700,cursor:"pointer"}} onClick={()=>{ctx.setPhone(ph);ctx.go("pt-register");}}>Register here</span></div>
     </div>
-    <Hint color="green">Use <strong>08012345678</strong> — OTP appears as a blue notification.</Hint>
+    <Hint color="green">Use <strong>08012345678</strong> - OTP appears as a blue notification.</Hint>
     <Back onClick={()=>ctx.go("landing")}/></Centered>);
 }
 
@@ -1229,7 +1229,7 @@ function PtOTP({ctx}){
   return(<Centered><PageTitle title="Enter OTP" sub={`Sent to +234 ${ctx.phone}`}/>
     <div style={S.card}>
       <label style={S.lbl}>6-Digit Code</label>
-      <input style={{...S.inp,fontSize:28,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={val} onChange={e=>{setVal(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&verify()}/>
+      <input style={{...S.inp,fontSize:28,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="------" maxLength={6} value={val} onChange={e=>{setVal(e.target.value);setErr("");}} onKeyDown={e=>e.key==="Enter"&&verify()}/>
       {err&&<div style={{color:"#DC2626",fontSize:13,marginTop:8}}>{err}</div>}
       <button style={{...S.btnG,marginTop:18}} onClick={verify}>Confirm Code</button>
     </div><Back onClick={()=>ctx.go("pt-login")}/></Centered>);
@@ -1263,7 +1263,7 @@ function PtRegister({ctx}){
         <Fl label="Genotype"><select style={S.inp} value={f.genotype} onChange={e=>upd("genotype",e.target.value)}>{["AA","AS","SS","AC","SC"].map(g=><option key={g}>{g}</option>)}</select></Fl>
         <Fl label="NHIA No."><input style={S.inp} placeholder="Optional" value={f.nhia} onChange={e=>upd("nhia",e.target.value)}/></Fl>
       </div>
-      <Fl label="Known Allergies"><input style={S.inp} placeholder="e.g. Penicillin, Sulfa drugs — or 'None'" value={f.allergies} onChange={e=>upd("allergies",e.target.value)}/></Fl>
+      <Fl label="Known Allergies"><input style={S.inp} placeholder="e.g. Penicillin, Sulfa drugs - or 'None'" value={f.allergies} onChange={e=>upd("allergies",e.target.value)}/></Fl>
       <Fl label="Address"><input style={S.inp} placeholder="Home address" value={f.address} onChange={e=>upd("address",e.target.value)}/></Fl>
       <Fl label="Occupation"><input style={S.inp} placeholder="e.g. Teacher, Trader, Civil Servant" value={f.occupation} onChange={e=>upd("occupation",e.target.value)}/></Fl>
 
@@ -1349,6 +1349,7 @@ function PtApp({ctx}){
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
 function PatientDashboard({ctx,recs}){
   const u=ctx.user;
+  const [showHMO,setShowHMO]=useState(false);
   const age=Math.floor((Date.now()-new Date(u.dob))/(365.25*24*60*60*1000));
   const chronic=[...new Set(recs.filter(r=>r.careType==="CHRONIC"||r.fields?.condition).map(r=>r.fields?.condition||r.fields?.diagnosis).filter(Boolean))].slice(0,4);
   const isPregnant=recs.some(r=>r.careType==="MATERNITY"&&new Date(r.date)>new Date(Date.now()-280*24*60*60*1000));
@@ -1470,7 +1471,7 @@ function PatientDashboard({ctx,recs}){
     </div>}
 
     {/* HMO Card */}
-    <div style={{...S.card,marginBottom:14,cursor:"pointer",border:"1.5px solid "+(u.hmo?.provider?HMO_PROVIDERS[u.hmo.provider]?.color||G:"#E5E2DB")}} onClick={()=>ctx.setModal("hmo")}>
+    <div style={{...S.card,marginBottom:14,cursor:"pointer",border:"1.5px solid "+(u.hmo?.provider?HMO_PROVIDERS[u.hmo.provider]?.color||G:"#E5E2DB")}} onClick={()= onClick={()=>setShowHMO(true)}>ctx.setModal("hmo")}>
       {u.hmo?.provider?(<>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
           <div style={{fontWeight:700,fontSize:13,color:HMO_PROVIDERS[u.hmo.provider]?.color||G}}>🏥 HMO Card</div>
@@ -1498,6 +1499,16 @@ function PatientDashboard({ctx,recs}){
       <div style={{fontWeight:700,fontSize:12,marginBottom:4,color:"#92400E"}}>🆘 Emergency Contact</div>
       <div style={{fontSize:13,color:"#57534E"}}><strong>{u.nokName}</strong> ({u.nokRelation}) · {u.nokPhone}</div>
     </div>
+    {showHMO&&<HMOCardModal user={u} onClose={()=>setShowHMO(false)} flash={ctx.flash}
+      onSave={(hmo)=>{
+        const users=DB.get("hvng_users")||[];
+        const updated=users.map(p=>p.phone===u.phone?{...p,hmo}:p);
+        DB.set("hvng_users",updated);
+        ctx.setUser({...u,hmo});
+        setShowHMO(false);
+        ctx.flash("HMO card saved!");
+      }}
+    />}
   </div>);
 }
 
@@ -1655,7 +1666,7 @@ function DrLogin({ctx}){
     if(!d){setErr("Invalid credentials");return;}
     ctx.setDoc(d);ctx.flash(`Welcome, ${d.name}`);ctx.go("dr-app","patients");
   };
-  return(<Centered><PageTitle title="Clinician Login" sub="HealthVault NG — Clinician Portal" color={GB}/>
+  return(<Centered><PageTitle title="Clinician Login" sub="HealthVault NG - Clinician Portal" color={GB}/>
     <div style={S.card}>
       <Fl label="Email"><input style={S.inp} placeholder="doctor@hospital.ng" value={f.email} onChange={e=>setF(p=>({...p,email:e.target.value}))}/></Fl>
       <Fl label="Password"><input type="password" style={S.inp} value={f.pw} onChange={e=>setF(p=>({...p,pw:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&login()}/></Fl>
@@ -1733,7 +1744,7 @@ function DrApp({ctx}){
   );
 }
 
-// ── DOCTOR PATIENTS (home screen — mirrors lab) ───────────────────
+// ── DOCTOR PATIENTS (home screen - mirrors lab) ───────────────────
 function DrPatients({ctx,drKey}){
   const [showAddModal,setShowAddModal]=useState(false);
   const [code,setCode]=useState("");const [codeErr,setCodeErr]=useState("");
@@ -1748,7 +1759,7 @@ function DrPatients({ctx,drKey}){
     if(!existing.find(e=>e.phone===pt.phone)){
       DB.set(drKey,[...existing,{phone:pt.phone,name:pt.name,dob:pt.dob,bloodGroup:pt.bloodGroup,genotype:pt.genotype,gender:pt.gender}]);
     }
-    ctx.setVp({...pt});ctx.flash(`Viewing: "+pt.name+"`);
+    ctx.setVp({...pt});ctx.flash(`Viewing: ${pt.name}`);
     setShowAddModal(false);setCode("");setCodeErr("");
     ctx.go("dr-view");
   };
@@ -1771,7 +1782,7 @@ function DrPatients({ctx,drKey}){
       <div style={{textAlign:"center",paddingTop:60,paddingBottom:40}}>
         <div style={{fontSize:56,marginBottom:16}}>👥</div>
         <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:8}}>No patients yet</div>
-        <div style={{color:"#78716C",fontSize:14,lineHeight:1.75,maxWidth:280,margin:"0 auto 24px"}}>Add a patient using their 6-digit access code. They appear here permanently — no code needed next time.</div>
+        <div style={{color:"#78716C",fontSize:14,lineHeight:1.75,maxWidth:280,margin:"0 auto 24px"}}>Add a patient using their 6-digit access code. They appear here permanently - no code needed next time.</div>
         <button onClick={()=>setShowAddModal(true)} style={{background:GB,color:"#fff",border:"none",borderRadius:12,padding:"13px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>Add First Patient</button>
       </div>
     ):(
@@ -1813,7 +1824,7 @@ function DrPatients({ctx,drKey}){
           <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:4}}>Add New Patient</div>
           <div style={{fontSize:13,color:"#78716C",marginBottom:20,lineHeight:1.65}}>Ask the patient to go to their <strong>Access tab</strong> and share their 6-digit code with you.</div>
           <Fl label="Patient Access Code">
-            <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
+            <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="------" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
           </Fl>
           {codeErr&&<div style={{color:"#DC2626",fontSize:13,marginBottom:10,lineHeight:1.5}}>{codeErr}</div>}
           <button style={S.btnB} onClick={lookupPatient}>Find Patient</button>
@@ -1833,7 +1844,7 @@ function DrVisitHistory({recs,ctx}){
           <button onClick={()=>ctx.setVp(null)} style={{...S.sm("ghost"),fontSize:12,padding:"6px 12px"}}>← Back</button>
           <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:GB}}>{ctx.vp.name}'s History</div>
         </div>
-        <FullHistory recs={allPtRecs} title={`${ctx.vp.name} — Full History`}/>
+        <FullHistory recs={allPtRecs} title={`${ctx.vp.name} - Full History`}/>
       </>
     ):(
       <>
@@ -1882,7 +1893,7 @@ function DrView({ctx}){
       const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:prompt}]})});
       const data=await res.json();
       setAiSummary(data.content?.map(b=>b.text||"").join("")||"Summary unavailable.");
-    }catch{setAiSummary("Could not generate summary — check connection.");}
+    }catch{setAiSummary("Could not generate summary - check connection.");}
     setAiLoading(false);
   };
 
@@ -1945,7 +1956,7 @@ function DrNewVisit({ctx}){
 function LabLogin({ctx}){
   const [f,setF]=useState({email:"",pw:""});const [err,setErr]=useState("");
   const login=()=>{const l=(DB.get("hvng_labs")||[]).find(l=>l.email===f.email&&l.password===f.pw);if(!l){setErr("Invalid credentials");return;}ctx.setLab(l);ctx.setVp(null);ctx.flash(`Welcome, ${l.name}`);ctx.go("lab-app","patients");};
-  return(<Centered><PageTitle title="Lab Portal" sub="HealthVault NG — Laboratory Login" color={GL}/>
+  return(<Centered><PageTitle title="Lab Portal" sub="HealthVault NG - Laboratory Login" color={GL}/>
     <div style={S.card}>
       <Fl label="Lab Email"><input style={S.inp} placeholder="lab@diagnostics.ng" value={f.email} onChange={e=>setF(p=>({...p,email:e.target.value}))}/></Fl>
       <Fl label="Password"><input type="password" style={S.inp} value={f.pw} onChange={e=>setF(p=>({...p,pw:e.target.value}))} onKeyDown={e=>e.key==="Enter"&&login()}/></Fl>
@@ -1987,7 +1998,7 @@ function LabMyPatients({ctx,labKey}){
     if(!pt){setCodeErr("Patient not found.");return;}
     const existing=DB.get(labKey)||[];
     if(!existing.find(e=>e.phone===pt.phone)) DB.set(labKey,[...existing,{phone:pt.phone,name:pt.name,dob:pt.dob,bloodGroup:pt.bloodGroup,genotype:pt.genotype}]);
-    ctx.setVp({...pt});ctx.flash(`Patient added: "+pt.name+"`);
+    ctx.setVp({...pt});ctx.flash(`Patient added: ${pt.name}`);
     setShowAddModal(false);setCode("");setCodeErr("");ctx.setSub("entry");
   };
   return(<div>
@@ -2022,7 +2033,7 @@ function LabMyPatients({ctx,labKey}){
           <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:4}}>Add New Patient</div>
           <div style={{fontSize:13,color:"#78716C",marginBottom:20,lineHeight:1.65}}>Ask the patient to go to their <strong>Access tab</strong> and share their 6-digit code.</div>
           <Fl label="Patient Access Code">
-            <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="——————" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
+            <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="------" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
           </Fl>
           {codeErr&&<div style={{color:"#DC2626",fontSize:13,marginBottom:10,lineHeight:1.5}}>{codeErr}</div>}
           <button style={S.btnL} onClick={lookupPatient}>Add Patient</button>
@@ -2037,7 +2048,7 @@ function LabHistoryView({ctx}){
   const p=ctx.vp;
   if(!p) return(<div style={{textAlign:"center",paddingTop:60}}><div style={{fontSize:48,marginBottom:12}}>🔍</div><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>No patient selected</div><div style={{color:"#78716C",fontSize:14}}>Go to Patients and tap a patient to view their history.</div></div>);
   const allRecs=(DB.get(`hvng_records_${p.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
-  return(<FullHistory recs={allRecs} title={`${p.name} — Full History`}/>);
+  return(<FullHistory recs={allRecs} title={`${p.name} - Full History`}/>);
 }
 
 function LabEntry({ctx,labKey}){
@@ -2070,8 +2081,8 @@ function LabEntry({ctx,labKey}){
       const text=data.content?.map(b=>b.text||"").join("")||"{}";
       const clean=text.replace(/```json|```/g,"").trim();
       setFields(prev=>({...prev,...JSON.parse(clean)}));
-      ctx.flash("✓ Fields auto-populated — please review","info",5000);
-    }catch{ctx.flash("Could not auto-read — fill fields manually","info");}
+      ctx.flash("✓ Fields auto-populated - please review","info",5000);
+    }catch{ctx.flash("Could not auto-read - fill fields manually","info");}
     setAiParsing(false);
   };
 
@@ -2113,7 +2124,7 @@ function LabEntry({ctx,labKey}){
       <Fl label="Date of Test"><input type="date" style={S.inp} value={date} onChange={e=>setDate(e.target.value)}/></Fl>
       <div style={{background:"#FEF9EC",border:"2px solid #FCD34D",borderRadius:12,padding:"14px 16px",marginBottom:16}}>
         <div style={{fontWeight:700,fontSize:13,color:"#92400E",marginBottom:6}}>📎 Upload Lab Document</div>
-        <div style={{fontSize:12,color:"#78716C",marginBottom:10,lineHeight:1.6}}>Upload a PDF or photo — AI will <strong>auto-fill fields below</strong> for you to review.</div>
+        <div style={{fontSize:12,color:"#78716C",marginBottom:10,lineHeight:1.6}}>Upload a PDF or photo - AI will <strong>auto-fill fields below</strong> for you to review.</div>
         {aiParsing&&<div style={{fontSize:13,color:"#B45309",fontWeight:600,marginBottom:8}}>⏳ Reading document…</div>}
         {attachments.length>0&&(<div style={{display:"flex",flexDirection:"column",gap:6,marginBottom:10}}>
           {attachments.map((a,i)=>(<div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",background:"#fff",borderRadius:8,border:"1.5px solid #E5E2DB"}}>
@@ -2125,11 +2136,11 @@ function LabEntry({ctx,labKey}){
         </div>)}
         <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{display:"none"}} onChange={handleFileUpload}/>
         <button type="button" onClick={()=>fileRef.current.click()} disabled={aiParsing} style={{width:"100%",padding:"11px",borderRadius:10,border:"2px dashed #FCD34D",background:"#fff",cursor:"pointer",fontSize:13,color:"#92400E",fontWeight:600,display:"flex",alignItems:"center",justifyContent:"center",gap:8,opacity:aiParsing?.6:1}}>
-          <span style={{fontSize:20}}>📎</span>{attachments.length>0?"Add more files":"Upload PDF or Photo — auto-read by AI"}
+          <span style={{fontSize:20}}>📎</span>{attachments.length>0?"Add more files":"Upload PDF or Photo - auto-read by AI"}
         </button>
       </div>
       <div style={{borderTop:"1.5px solid #FCD34D",paddingTop:14}}>
-        <div style={{fontSize:11,fontWeight:700,color:"#D97706",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>🔬 {testCat} — Enter or Review Values</div>
+        <div style={{fontSize:11,fontWeight:700,color:"#D97706",marginBottom:10,textTransform:"uppercase",letterSpacing:.5}}>🔬 {testCat} - Enter or Review Values</div>
         <StructuredTestForm testCat={testCat} fields={fields} upd={upd}/>
       </div>
       <button style={{...S.btnL,marginTop:14}} onClick={save}>Save Result to Patient</button>
@@ -2217,26 +2228,4 @@ function Fl({label,children}){return <div style={{marginBottom:14}}><label style
 function SectionHead({children,color=G}){return <div style={{fontWeight:700,fontSize:13,color,marginBottom:14,marginTop:8,paddingTop:14,borderTop:"1.5px solid #EAE8E3"}}>{children}</div>;}
 function Back({onClick}){return <div style={{textAlign:"center",marginTop:16}}><span style={{fontSize:13,color:"#78716C",cursor:"pointer"}} onClick={onClick}>← Back</span></div>;}
 function Hint({children,color="green"}){const bg={green:"#EFF6EE",blue:"#EFF6FF",amber:"#FEF3C7"};const tc={green:"#166534",blue:"#1E40AF",amber:"#92400E"};return <div style={{marginTop:14,padding:"12px 16px",background:bg[color]||bg.green,borderRadius:12,fontSize:12,color:tc[color]||tc.green,lineHeight:1.8}}>{children}</div>;}
-function Empty({msg}){return <div style={{textAlign:"center",paddingTop:44}}><div style={{fontSize:44,marginBottom:10}}>📂</div><div style={{color:"#78716C",fontSize:14}}>{msg}</div></div>;}"],{type:"text/html"})["<html><head><title>Referral - "+pt.name+"</title>import { useState, useEffect, useRef } from "react";
-
-// ── Storage ───────────────────────────────────────────────────────
-const DB = {
-  get:(k)=>{ try{return JSON.parse(localStorage.getItem(k));}catch{return null;} },
-  set:(k,v)=>{ try{localStorage.setItem(k,JSON.stringify(v));}catch{} },
-};
-
-// ── Offline queue ─────────────────────────────────────────────────
-const Q = {
-  push:(action)=>{ const q=DB.get("hvng_queue")||[]; DB.set("hvng_queue",[...q,{...action,id:Date.now()}]); },
-  flush:()=>{ const q=DB.get("hvng_queue")||[]; q.forEach(a=>{ if(a.type==="addRecord"){ const recs=DB.get(`hvng_records_${a.phone}`)||[]; if(!recs.find(r=>r.id===a.rec.id)) DB.set(`hvng_records_${a.phone}`,[...recs,a.rec]); } }); DB.set("hvng_queue",[]); },
-  count:()=>(DB.get("hvng_queue")||[]).length,
-};
-
-// ── Notifications ─────────────────────────────────────────────────
-function pushNotif(phone,message,type="result",from=""){
-  if(!phone) return;
-  const all=DB.get(`hvng_notif_${phone}`)||[];
-  DB.set(`hvng_notif_${phone}`,[{id:Date.now(),message,type,from,date:new Date().toISOString().split("T")[0],read:false},...all.slice(0,49)]);
-}
-
-// ── Seed ─────────────────────────────────────────────────────────
+function Empty({msg}){return <div style={{textAlign:"center",paddingTop:44}}><div style={{fontSize:44,marginBottom:10}}>📂</div><div style={{color:"#78716C",fontSize:14}}>{msg}</div></div>;}

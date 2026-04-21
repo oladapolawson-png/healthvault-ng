@@ -1252,6 +1252,7 @@ function PtRegister({ctx}){
     ctx.setUser(nu);ctx.flash("Welcome, "+f.name.split(" ")[0]+"!");ctx.go("pt-app","dashboard");
   };
   return(<div style={{maxWidth:480,margin:"0 auto",padding:"0 20px 60px"}}>
+    {showTandC&&<TandCModal onAccept={()=>{setShowTandC(false);doRegister();}} onDecline={()=>setShowTandC(false)}/>}
     <PageTitle title="Create Your Profile" sub="Complete all sections to get started"/>
     <div style={S.card}>
       <SectionHead>👤 Personal Details</SectionHead>
@@ -1276,7 +1277,6 @@ function PtRegister({ctx}){
 
       <div style={{background:"#FEF3C7",border:"1.5px solid #FCD34D",borderRadius:10,padding:"10px 14px",marginBottom:14,fontSize:12,color:"#92400E"}}>
         ⚠️ Next of kin information is required for emergency situations and is shown on your Emergency Card.
-      </div>
       </div>
 
       {/* HMO Section */}
@@ -1308,7 +1308,6 @@ function PtRegister({ctx}){
         </>)}
       </div>
 
-      <div style={{display:"none"}}></div>
       <button style={{...S.btnG,marginTop:4}} onClick={submit}>Create My Health Folder</button>
     </div>
     <Back onClick={()=>ctx.go("pt-login")}/>

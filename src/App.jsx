@@ -304,7 +304,7 @@ export default function App(){
     seedDemo();
     if(!document.getElementById("hvng-fonts")){
       const l=document.createElement("link");l.id="hvng-fonts";l.rel="stylesheet";
-      l.href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap";
+      l.href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600;700&display=swap";
       document.head.appendChild(l);
     }
     const on=()=>{setOnline(true);Q.flush();setQCount(0);};
@@ -1657,7 +1657,7 @@ function PtApp({ctx}){
   const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs} showFamily={showFamily} setShowFamily={setShowFamily}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
-      <div style={S.topBar(G)}>
+      <div style={{background:'#0C1A10',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}>
         <div style={{width:36,height:36,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flex:"none"}}>{u?.name?.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
         <div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>My Health Folder</div></div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
@@ -2247,7 +2247,7 @@ function DrView({ctx}){
 
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
-      <div style={S.topBar(GB)}>
+      <div style={{background:'#0E1828',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}>
         <span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-app","patients")}>‹</span>
         <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:16,fontWeight:700,flex:1}}>{p.name} | {getAge(p.dob)} | {p.gender}</div>
         <span style={{fontSize:12,background:"rgba(255,255,255,.2)",padding:"4px 10px",borderRadius:99,fontWeight:600}}>{p.bloodGroup}</span>
@@ -2295,7 +2295,7 @@ function DrView({ctx}){
 
 function DrNewVisit({ctx}){
   return(<div style={{maxWidth:480,margin:"0 auto"}}>
-    <div style={S.topBar(GB)}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
+    <div style={{background:'#0E1828',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
     <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }

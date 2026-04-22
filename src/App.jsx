@@ -1164,11 +1164,7 @@ function DrugInfoModal({drug,userMeds,onClose}){
   useEffect(()=>{
     const fetch_info=async()=>{
       const otherMeds=userMeds.filter(m=>m!==drug).join(", ")||"None";
-      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"
-Other medications the patient is on: "+otherMeds+"
-
-Return a JSON object ONLY with these fields:
-{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
+      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"\nOther medications the patient is on: "+otherMeds+"\n\nReturn a JSON object ONLY with these fields:\n{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
       try{
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
         const data=await res.json();

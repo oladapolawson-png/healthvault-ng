@@ -1164,11 +1164,7 @@ function DrugInfoModal({drug,userMeds,onClose}){
   useEffect(()=>{
     const fetch_info=async()=>{
       const otherMeds=userMeds.filter(m=>m!==drug).join(", ")||"None";
-      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"
-Other medications the patient is on: "+otherMeds+"
-
-Return a JSON object ONLY with these fields:
-{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
+      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"\nOther medications the patient is on: "+otherMeds+"\n\nReturn a JSON object ONLY with these fields:\n{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
       try{
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
         const data=await res.json();
@@ -1368,8 +1364,7 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#1C2B1E 0%,#0E1610 100%)",
      accent:"#3D7A52",glow:"rgba(61,122,82,0.28)",border:"rgba(61,122,82,0.2)",
      rotate:"-2.5deg",ox:"-10px",oy:"10px",
-     headline:"Your health,
-your record.",
+     headline:"Your health,\nyour record.",
      desc:"A complete picture of your health - visits, medications, lab results in plain English - always in your pocket.",
      features:["Plain-language lab results","Medication tracker & photo scan","HMO card, always accessible","Share records in one tap","Works without internet"],
      cta:"Open My Health Folder",note:"Login with phone number",
@@ -1380,8 +1375,7 @@ your record.",
      bg:"linear-gradient(145deg,#1A2232 0%,#0E1420 100%)",
      accent:"#4A7BB5",glow:"rgba(74,123,181,0.28)",border:"rgba(74,123,181,0.2)",
      rotate:"0.5deg",ox:"0px",oy:"0px",
-     headline:"Every patient.
-One place.",
+     headline:"Every patient.\nOne place.",
      desc:"Access complete patient histories, document consultations with AI, generate referral letters and clinical summaries in seconds.",
      features:["AI-powered clinical summaries","Structured consultation notes","One-tap referral letters","Patient access via secure code","MDCN verified portal"],
      cta:"Enter Clinician Portal",note:"MDCN registration required",
@@ -1392,8 +1386,7 @@ One place.",
      bg:"linear-gradient(145deg,#261C10 0%,#160F08 100%)",
      accent:"#B5834A",glow:"rgba(181,131,74,0.28)",border:"rgba(181,131,74,0.2)",
      rotate:"2.5deg",ox:"10px",oy:"10px",
-     headline:"Results posted.
-Records updated.",
+     headline:"Results posted.\nRecords updated.",
      desc:"Post structured diagnostic results directly to patient records with AI-assisted data entry. All standard Nigerian formats supported.",
      features:["AI auto-fills from results","Malaria, FBC, Blood Sugar","Urinalysis, Lipid, Typhoid","Faecal analysis","CAC verified labs only"],
      cta:"Enter Lab Portal",note:"CAC registration required",

@@ -268,9 +268,9 @@ const QUICK={
 // ── Styles ────────────────────────────────────────────────────────
 const G="#14532D",GB="#1D4ED8",GL="#B45309",GP="#0891B2",GA="#EAB308";
 const S={
-  page:{minHeight:"100vh",background:"#F7F5F2",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#1C1917"},
+  page:{minHeight:"100vh",background:"#F5F4F0",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#1C1917"},
   card:{background:"#fff",borderRadius:16,padding:"20px 22px",border:"1px solid #EAE8E3",boxShadow:"0 2px 8px rgba(0,0,0,.05),0 0 1px rgba(0,0,0,.06)"},
-  inp:{width:"100%",padding:"13px 15px",borderRadius:11,border:"1.5px solid #E0DDD8",fontSize:15,background:"#FAFAF8",outline:"none",boxSizing:"border-box",fontFamily:"inherit",transition:"border-color .2s",color:"#1A1916",WebkitTextFillColor:"#1A1916"},
+  inp:{width:"100%",padding:"12px 14px",borderRadius:10,border:"1.5px solid #D6D3CE",fontSize:15,background:"#FAFAF9",outline:"none",boxSizing:"border-box",fontFamily:"inherit",transition:"border .15s"},
   lbl:{fontSize:11,fontWeight:700,color:"#6B6862",marginBottom:5,display:"block",textTransform:"uppercase",letterSpacing:.6},
   btnG:{width:"100%",padding:14,borderRadius:12,background:G,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(20,83,45,.25)"},
   btnB:{width:"100%",padding:14,borderRadius:12,background:GB,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(29,78,216,.2)"},
@@ -304,7 +304,7 @@ export default function App(){
     seedDemo();
     if(!document.getElementById("hvng-fonts")){
       const l=document.createElement("link");l.id="hvng-fonts";l.rel="stylesheet";
-      l.href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@400;500;600;700&display=swap";
+      l.href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@400;500;600;700&display=swap";
       document.head.appendChild(l);
     }
     const on=()=>{setOnline(true);Q.flush();setQCount(0);};
@@ -337,7 +337,7 @@ export default function App(){
     {/* Desktop shell */}
     <div style={{minHeight:"100vh",background:"#0F3D23",display:"flex"}}>
       <div className="dsbar" style={{display:"none",width:340,flexDirection:"column",justifyContent:"center",padding:"60px 44px",color:"#fff",flexShrink:0}}>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:40,fontWeight:900,lineHeight:1.1,marginBottom:14}}>HealthVault<br/><span style={{color:"#86EFAC"}}>NG</span></div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:40,fontWeight:900,lineHeight:1.1,marginBottom:14}}>HealthVault<br/><span style={{color:"#86EFAC"}}>NG</span></div>
         <div style={{fontSize:13,opacity:.5,letterSpacing:2,marginBottom:24}}>NIGERIA'S PATIENT HEALTH RECORD PLATFORM</div>
         <div style={{fontSize:14,opacity:.7,lineHeight:1.9,marginBottom:36}}>Secure health records shared seamlessly between patients, doctors and labs across Nigeria.</div>
         {[["👤","Patients","Phone + OTP · Full record control"],["🩺","Clinicians","MDCN registration · AI summaries"],["🔬","Labs","Structured results · AI auto-fill"]].map(([icon,t,d])=>(
@@ -348,7 +348,7 @@ export default function App(){
         ))}
         <div style={{marginTop:36,fontSize:11,opacity:.35}}>🔒 Offline-first · No ads · Data stays on your device</div>
       </div>
-      <div style={{flex:1,background:"#F7F5F2",display:"flex",justifyContent:"center"}}>
+      <div style={{flex:1,background:"#F5F4F0",display:"flex",justifyContent:"center"}}>
         <div style={{width:"100%",maxWidth:480,position:"relative"}}>
           <div style={S.page} className="fade">
             {!online&&<div style={{background:"#FEF3C7",color:"#92400E",padding:"8px 16px",fontSize:12,fontWeight:600,textAlign:"center",borderBottom:"1px solid #FCD34D"}}>⚡ Offline - changes will sync when you reconnect{qCount>0?` (${qCount} queued)`:""}</div>}
@@ -398,7 +398,7 @@ function EmergencyCard({person,recs,onClose}){
   };
   return(<Sheet onClose={onClose} title="🚨 Emergency Card">
     <div style={{background:"linear-gradient(135deg,#DC2626,#EF4444)",borderRadius:16,padding:"20px",color:"#fff",marginBottom:16}}>
-      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:900}}>{p.name}</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:900}}>{p.name}</div>
       <div style={{fontSize:13,opacity:.85,marginTop:4}}>{p.dob} · {p.gender==="F"?"Female":"Male"}</div>
       <div style={{display:"flex",gap:16,marginTop:14,flexWrap:"wrap"}}>
         {[["Blood Group",p.bloodGroup],["Genotype",p.genotype],["NHIA",p.nhia||"N/A"]].map(([l,v])=>(<div key={l}><div style={{fontSize:10,opacity:.7,fontWeight:700}}>{l}</div><div style={{fontSize:18,fontWeight:900}}>{v}</div></div>))}
@@ -418,7 +418,7 @@ function EmergencyCard({person,recs,onClose}){
     {fullScreen&&(
       <div style={{position:"fixed",inset:0,background:"#DC2626",zIndex:9999,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:28,textAlign:"center"}} onClick={()=>setFullScreen(false)}>
         <div style={{fontSize:44,marginBottom:10}}>🆘</div>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:36,fontWeight:900,color:"#fff",lineHeight:1.1,marginBottom:6}}>{p.name}</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:36,fontWeight:900,color:"#fff",lineHeight:1.1,marginBottom:6}}>{p.name}</div>
         <div style={{fontSize:24,fontWeight:800,color:"rgba(255,255,255,0.9)",marginBottom:24}}>Blood: {p.bloodGroup} · Genotype: {p.genotype}</div>
         {p.allergies&&p.allergies!=="None known"&&(
           <div style={{background:"#fff",borderRadius:14,padding:"14px 24px",marginBottom:14,width:"100%",maxWidth:360}}>
@@ -491,11 +491,11 @@ function MaternalDashboard({recs,user,onClose}){
   return(<Sheet onClose={onClose} title="🤱 Maternal Dashboard">
     {edd&&(<div style={{background:"linear-gradient(135deg,#7C3AED,#9333EA)",borderRadius:16,padding:"20px",color:"#fff",marginBottom:16,textAlign:"center"}}>
       <div style={{fontSize:12,opacity:.8,marginBottom:6}}>ESTIMATED DATE OF DELIVERY</div>
-      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:28,fontWeight:900}}>{edd}</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:28,fontWeight:900}}>{edd}</div>
       <div style={{fontSize:14,opacity:.85,marginTop:6}}>{daysToEDD>0?`${daysToEDD} days to go`:"Due date reached!"}</div>
       <div style={{marginTop:12,background:"rgba(255,255,255,.15)",borderRadius:10,padding:"8px",fontSize:13}}>Current GA: {ga}</div>
     </div>)}
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:16,fontWeight:700,marginBottom:12,color:"#7C3AED"}}>ANC Visit Timeline</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:16,fontWeight:700,marginBottom:12,color:"#7C3AED"}}>ANC Visit Timeline</div>
     {!ancRecs.length&&<Empty msg="No maternity records found."/>}
     {ancRecs.map((r,i)=>(
       <div key={r.id} style={{display:"flex",gap:12,marginBottom:12}}>
@@ -568,7 +568,7 @@ function VitalTrends({recs,onClose}){
       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
         {wRecs.map((r,i)=>(
           <div key={i} style={{background:"#F0FDF4",borderRadius:10,padding:"8px 12px",textAlign:"center"}}>
-            <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:900,color:G}}>{r.w}</div>
+            <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:900,color:G}}>{r.w}</div>
             <div style={{fontSize:10,color:"#78716C",fontWeight:600}}>kg</div>
             <div style={{fontSize:10,color:"#A8A29E"}}>{r.date.slice(5)}</div>
           </div>
@@ -581,7 +581,7 @@ function VitalTrends({recs,onClose}){
       <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
         {bgRecs.map((r,i)=>(
           <div key={i} style={{background:"#FEF3C7",borderRadius:10,padding:"8px 12px",textAlign:"center"}}>
-            <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:16,fontWeight:900,color:"#B45309"}}>{r.bg}</div>
+            <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:16,fontWeight:900,color:"#B45309"}}>{r.bg}</div>
             <div style={{fontSize:10,color:"#A8A29E"}}>{r.date.slice(5)}</div>
           </div>
         ))}
@@ -800,7 +800,7 @@ function RecordDetail({rec,ctx,onClose}){
           <div style={{background:ct.bg,borderRadius:12,padding:"10px 12px",fontSize:22,flex:"none"}}>{ct.icon}</div>
           <div style={{flex:1}}>
             <div style={{background:ct.bg,color:ct.color,fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:99,display:"inline-block",marginBottom:5}}>{ct.label.toUpperCase()}</div>
-            <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:17,fontWeight:700,lineHeight:1.3}}>{rec.title}</div>
+            <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,lineHeight:1.3}}>{rec.title}</div>
             <div style={{fontSize:12,color:"#78716C",marginTop:4}}>📅 {rec.date}{rec.facility?` · 🏥 ${rec.facility}`:""}</div>
             {rec.addedBy==="doctor"&&<div style={{fontSize:11,color:"#7C3AED",fontWeight:700,marginTop:3}}>✍️ Added by clinician</div>}
             {rec.addedBy==="lab"&&<div style={{fontSize:11,color:GL,fontWeight:700,marginTop:3}}>🔬 Posted by {rec.labName||"lab"}</div>}
@@ -843,18 +843,18 @@ function FullHistory({recs,title="Full Medical History"}){
   const grouped={};
   filtered.forEach(r=>{const key=r.date?.slice(0,7)||"Unknown";if(!grouped[key])grouped[key]=[];grouped[key].push(r);});
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:14}}>{title}</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:14}}>{title}</div>
     <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:18}}>
       {summary.map(({ct,count,last})=>{const c=CARE[ct];return(
         <div key={ct} style={{background:c.bg,borderRadius:12,padding:"12px 14px",border:`1.5px solid ${c.color}22`}}>
           <div style={{fontSize:18,marginBottom:3}}>{c.icon}</div>
           <div style={{fontWeight:700,fontSize:12,color:c.color}}>{c.label}</div>
-          <div style={{fontSize:24,fontWeight:900,fontFamily:"'Cormorant Garant',Georgia,serif",color:c.color}}>{count}</div>
+          <div style={{fontSize:24,fontWeight:900,fontFamily:"'Fraunces',Georgia,serif",color:c.color}}>{count}</div>
           <div style={{fontSize:10,color:c.color,opacity:.7}}>Last: {last}</div>
         </div>
       );})}
       <div style={{background:"#F9F7F4",borderRadius:12,padding:"12px 14px",border:"1.5px solid #E5E2DB",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-        <div style={{fontSize:26,fontFamily:"'Cormorant Garant',Georgia,serif",fontWeight:900,color:G}}>{recs.length}</div>
+        <div style={{fontSize:26,fontFamily:"'Fraunces',Georgia,serif",fontWeight:900,color:G}}>{recs.length}</div>
         <div style={{fontSize:10,color:"#78716C",fontWeight:700}}>TOTAL RECORDS</div>
       </div>
     </div>
@@ -884,7 +884,10 @@ function AISummaryModal({patient,recs,onClose,flash}){
     const sorted = (recs||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
     const episodes = sorted.slice(0,8).map(r=>{
       const f=r.fields||{};
-      return {date:r.date,type:CARE[r.careType]?.label||r.careType,title:r.title,diagnosis:f.diagnosis||f.condition||null,treatment:f.treatment||null,bp:f.bp||null,weight:f.weight||null,glucose:f.bloodGlucose||null,labs:f.testCategory?{test:f.testType||f.testCategory,result:f.result||f.value,status:f.resultStatus}:null,
+      return {date:r.date,type:CARE[r.careType]?.label||r.careType,title:r.title,
+        diagnosis:f.diagnosis||f.condition||null,treatment:f.treatment||null,
+        bp:f.bp||null,weight:f.weight||null,glucose:f.bloodGlucose||null,
+        labs:f.testCategory?{test:f.testType||f.testCategory,result:f.result||f.value,status:f.resultStatus}:null,
         pharmacy:r.careType==="PHARMACY"?{drug:f.genericName,dose:f.dose,freq:f.frequency,indication:f.indication}:null,
         notes:f.notes||null};
     });
@@ -912,7 +915,7 @@ function AISummaryModal({patient,recs,onClose,flash}){
       <div className="sheet-anim" style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"90vh",overflowY:"auto",padding:"20px 20px 48px"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 20px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700}}>AI Patient Summary</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700}}>AI Patient Summary</div>
           <div style={{fontSize:12,color:"#78716C"}}>{p.name}</div>
         </div>
         {!summary&&!loading&&(
@@ -983,7 +986,7 @@ function TandCModal({onAccept,onDecline}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.7)",zIndex:800,display:"flex",alignItems:"center",justifyContent:"center",padding:16}}>
       <div style={{background:"#fff",borderRadius:20,width:"100%",maxWidth:480,maxHeight:"90vh",display:"flex",flexDirection:"column",overflow:"hidden"}}>
         <div style={{padding:"20px 24px 14px",borderBottom:"1px solid #EAE8E3"}}>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,color:G}}>Terms and Conditions</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:G}}>Terms and Conditions</div>
           <div style={{fontSize:12,color:"#78716C",marginTop:4}}>Please read and scroll to the bottom to accept</div>
         </div>
         <div ref={textRef} onScroll={handleScroll} style={{flex:1,overflowY:"auto",padding:"16px 24px",fontSize:12,color:"#57534E",lineHeight:1.8,whiteSpace:"pre-wrap",fontFamily:"monospace"}}>
@@ -1040,7 +1043,7 @@ function HMOCardModal({user,onClose,onSave,flash}){
       <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"92vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 18px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700}}>My HMO Card</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700}}>My HMO Card</div>
           {!editing&&provider&&<button onClick={()=>setEditing(true)} style={{background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",borderRadius:8,padding:"6px 12px",fontSize:12,fontWeight:600,cursor:"pointer"}}>Edit</button>}
         </div>
 
@@ -1051,7 +1054,7 @@ function HMOCardModal({user,onClose,onSave,flash}){
             <div style={{position:"absolute",bottom:-20,left:-20,width:80,height:80,borderRadius:"50%",background:"rgba(255,255,255,.06)"}}/>
             <div style={{position:"relative",zIndex:1}}>
               <div style={{fontSize:10,opacity:.7,letterSpacing:1.5,textTransform:"uppercase",marginBottom:2}}>Health Insurance</div>
-              <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:900,marginBottom:14}}>{provider}</div>
+              <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:900,marginBottom:14}}>{provider}</div>
               <div style={{fontSize:16,fontWeight:700,marginBottom:4}}>{user.name}</div>
               <div style={{fontSize:11,opacity:.8,marginBottom:14}}>NHIA: {user.nhia||"N/A"}</div>
               <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
@@ -1099,7 +1102,7 @@ function HMOCardModal({user,onClose,onSave,flash}){
             {/* Auto-populated provider card preview */}
             <div style={{background:hmoInfo.color,borderRadius:14,padding:"14px 16px",marginBottom:14,color:"#fff"}}>
               <div style={{fontSize:10,opacity:.7,letterSpacing:1,textTransform:"uppercase"}}>Selected Provider</div>
-              <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:17,fontWeight:800,marginTop:2,marginBottom:8}}>{provider}</div>
+              <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:800,marginTop:2,marginBottom:8}}>{provider}</div>
               <div style={{display:"flex",gap:14,fontSize:11,opacity:.85,flexWrap:"wrap"}}>
                 <span>📞 {hmoInfo.phone}</span>
                 <span>🌐 {hmoInfo.website}</span>
@@ -1161,7 +1164,11 @@ function DrugInfoModal({drug,userMeds,onClose}){
   useEffect(()=>{
     const fetch_info=async()=>{
       const otherMeds=userMeds.filter(m=>m!==drug).join(", ")||"None";
-      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"\nOther medications the patient is on: "+otherMeds+"\n\nReturn a JSON object ONLY with these fields:\n{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
+      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"
+Other medications the patient is on: "+otherMeds+"
+
+Return a JSON object ONLY with these fields:
+{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
       try{
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
         const data=await res.json();
@@ -1184,7 +1191,7 @@ function DrugInfoModal({drug,userMeds,onClose}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"90vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>{drug}</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>{drug}</div>
         <div style={{fontSize:12,color:"#78716C",marginBottom:18}}>Complete drug information · Powered by AI</div>
 
         {loading&&<div style={{textAlign:"center",padding:"30px 0"}}><div style={{fontSize:14,color:"#78716C"}}>Loading drug information...</div></div>}
@@ -1292,7 +1299,7 @@ function FamilyModal({user,onClose,flash,onSwitch}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:700,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
       <div style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>Family Health Folder</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:4}}>Family Health Folder</div>
         <div style={{fontSize:12,color:"#78716C",lineHeight:1.7,marginBottom:18}}>Manage health records for your whole family from one device. Switch between family members instantly.</div>
 
         {/* Current user + family members */}
@@ -1361,7 +1368,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#1C2B1E 0%,#0E1610 100%)",
      accent:"#3D7A52",glow:"rgba(61,122,82,0.28)",border:"rgba(61,122,82,0.2)",
      rotate:"-2.5deg",ox:"-10px",oy:"10px",
-     headline:"Your health,\nyour record.",
+     headline:"Your health,
+your record.",
      desc:"A complete picture of your health - visits, medications, lab results in plain English - always in your pocket.",
      features:["Plain-language lab results","Medication tracker & photo scan","HMO card, always accessible","Share records in one tap","Works without internet"],
      cta:"Open My Health Folder",note:"Login with phone number",
@@ -1372,7 +1380,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#1A2232 0%,#0E1420 100%)",
      accent:"#4A7BB5",glow:"rgba(74,123,181,0.28)",border:"rgba(74,123,181,0.2)",
      rotate:"0.5deg",ox:"0px",oy:"0px",
-     headline:"Every patient.\nOne place.",
+     headline:"Every patient.
+One place.",
      desc:"Access complete patient histories, document consultations with AI, generate referral letters and clinical summaries in seconds.",
      features:["AI-powered clinical summaries","Structured consultation notes","One-tap referral letters","Patient access via secure code","MDCN verified portal"],
      cta:"Enter Clinician Portal",note:"MDCN registration required",
@@ -1383,7 +1392,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#261C10 0%,#160F08 100%)",
      accent:"#B5834A",glow:"rgba(181,131,74,0.28)",border:"rgba(181,131,74,0.2)",
      rotate:"2.5deg",ox:"10px",oy:"10px",
-     headline:"Results posted.\nRecords updated.",
+     headline:"Results posted.
+Records updated.",
      desc:"Post structured diagnostic results directly to patient records with AI-assisted data entry. All standard Nigerian formats supported.",
      features:["AI auto-fills from results","Malaria, FBC, Blood Sugar","Urinalysis, Lipid, Typhoid","Faecal analysis","CAC verified labs only"],
      cta:"Enter Lab Portal",note:"CAC registration required",
@@ -1654,12 +1664,12 @@ function PtApp({ctx}){
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   const TABS=[{id:"dashboard",icon:"🏠",label:"Dashboard"},{id:"history",icon:"📋",label:"History"},{id:"documents",icon:"📄",label:"Documents"},{id:"access",icon:"🔐",label:"Share"}];
-  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs} showFamily={showFamily} setShowFamily={setShowFamily}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
+  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
-      <div style={{background:'#0C1A10',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}>
+      <div style={S.topBar(G)}>
         <div style={{width:36,height:36,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:700,fontSize:13,flex:"none"}}>{u?.name?.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
-        <div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>My Health Folder</div></div>
+        <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{u?.name}</div><div style={{fontSize:11,opacity:.7}}>My Health Folder</div></div>
         <div style={{display:"flex",gap:8,alignItems:"center"}}>
           <div title="AI Summary" style={{cursor:"pointer",fontSize:18}} onClick={()=>ctx.setModal("summary")}>📊</div>
           <div title="Family Folder" style={{cursor:"pointer",fontSize:18,position:"relative"}} onClick={()=>setShowFamily(true)}>
@@ -1683,7 +1693,7 @@ function PtApp({ctx}){
 }
 
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
-function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
+function PatientDashboard({ctx,recs}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
   const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);
@@ -1723,7 +1733,7 @@ function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
   return(<div>
     <div style={{background:"linear-gradient(135deg,#0A3320,#14532D)",borderRadius:18,padding:"18px 20px",marginBottom:14,color:"#fff",position:"relative",overflow:"hidden"}}>
       <div style={{position:"absolute",top:-20,right:-20,width:100,height:100,borderRadius:"50%",background:"rgba(255,255,255,.05)"}}/>
-      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>{u.name}</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>{u.name}</div>
       <div style={{display:"flex",gap:16,flexWrap:"wrap",marginBottom:10}}>
         {[["Age",age+" yrs"],["Blood Group",u.bloodGroup],["Genotype",u.genotype]].map(([l,v])=>(
           <div key={l}><div style={{fontSize:9,opacity:.6,textTransform:"uppercase",letterSpacing:.8}}>{l}</div><div style={{fontSize:14,fontWeight:700,marginTop:1}}>{v}</div></div>
@@ -1803,7 +1813,7 @@ function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
 
     {!recs.length&&<div style={{textAlign:"center",padding:"40px 20px"}}>
       <div style={{fontSize:48,marginBottom:12}}>🏥</div>
-      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,color:G,marginBottom:8}}>Your health story starts here</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:G,marginBottom:8}}>Your health story starts here</div>
       <div style={{fontSize:13,color:"#78716C",lineHeight:1.7}}>When a doctor or lab adds information, it will appear here. Share your access code with your doctor to get started.</div>
       <button onClick={()=>ctx.setSub("access")} style={{...S.btnG,maxWidth:240,margin:"20px auto 0"}}>Share with a Doctor or Lab</button>
     </div>}
@@ -1867,7 +1877,7 @@ function PatientHistory({ctx,recs}){
   const grouped=filtered.reduce((acc,r)=>{const ym=r.date?.slice(0,7)||"Unknown";if(!acc[ym])acc[ym]=[];acc[ym].push(r);return acc;},{});
   const fmt=ym=>{if(!ym||ym==="Unknown")return"Unknown";const[y,m]=ym.split("-");return new Date(y,m-1).toLocaleDateString("en-NG",{month:"long",year:"numeric"});};
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:12}}>My Health History</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:12}}>My Health History</div>
     <div style={{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}}>
       {["ALL",...Object.keys(CARE)].map(k=>{const info=k==="ALL"?{label:"All",color:G,bg:"#D1FAE5"}:CARE[k];const active=filter===k;return(<button key={k} onClick={()=>setFilter(k)} style={{padding:"5px 12px",borderRadius:99,fontSize:11,fontWeight:600,border:active?"2px solid "+info.color:"2px solid #E5E2DB",background:active?info.bg:"#FAFAF9",color:active?info.color:"#78716C",cursor:"pointer"}}>{k==="ALL"?"All":info.label}</button>);})}
     </div>
@@ -1932,7 +1942,7 @@ function PatientDocuments({ctx}){
   };
 
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>My Health Documents</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>My Health Documents</div>
     <div style={{fontSize:13,color:"#78716C",lineHeight:1.7,marginBottom:14}}>Upload prescriptions, lab results or any health document. Photos of documents are automatically scanned and saved to your records.</div>
     <input ref={fileRef} type="file" multiple accept=".pdf,.jpg,.jpeg,.png" style={{display:"none"}} onChange={handleUpload}/>
     <div onClick={()=>fileRef.current.click()} style={{background:"#F0FDF4",border:"2px dashed #86EFAC",borderRadius:16,padding:"24px 20px",textAlign:"center",cursor:"pointer",marginBottom:14}}>
@@ -1978,7 +1988,7 @@ function AccessManager({ctx}){
   };
   const revoke=(code)=>{const all=(DB.get("hvng_access_codes")||[]).map(c=>c.code===code?{...c,active:false}:c);DB.set("hvng_access_codes",all);setAllCodes(all);ctx.flash("Access revoked","err");};
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>Share with a Doctor or Lab</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:G,marginBottom:6}}>Share with a Doctor or Lab</div>
     <div style={{fontSize:13,color:"#78716C",lineHeight:1.7,marginBottom:14}}>Give your doctor or lab a one-time code to view your records. The code expires in <strong>24 hours</strong>. You can cancel it anytime.</div>
     <div style={{...S.card,marginBottom:16}}>
       <div style={{fontWeight:700,fontSize:14,marginBottom:12}}>🔑 Give Access to a Doctor or Lab</div>
@@ -2081,7 +2091,7 @@ function DrApp({ctx}){
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={{...S.topBar(GB)}}>
         <div style={{width:38,height:38,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:14,flex:"none"}}>{d?.name?.split(" ").filter(w=>w!=="Dr.").map(w=>w[0]).join("").slice(0,2)}</div>
-        <div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:15,fontWeight:700}}>{d?.name}</div><div style={{fontSize:11,opacity:.7}}>{d?.specialty}{d?.mdcn?` · MDCN: ${d.mdcn}`:""}</div></div>
+        <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{d?.name}</div><div style={{fontSize:11,opacity:.7}}>{d?.specialty}{d?.mdcn?` · MDCN: ${d.mdcn}`:""}</div></div>
         <span style={{fontSize:12,cursor:"pointer",opacity:.8,background:"rgba(255,255,255,.15)",padding:"5px 10px",borderRadius:8,fontWeight:600}} onClick={()=>{ctx.setDoc(null);ctx.setVp(null);ctx.go("landing");}}>Sign out</span>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"18px 16px 96px"}}>{PAGES[ctx.sub]??PAGES.patients}</div>
@@ -2120,7 +2130,7 @@ function DrPatients({ctx,drKey}){
   return(<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
       <div>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:700,color:GB}}>My Patients</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:700,color:GB}}>My Patients</div>
         <div style={{fontSize:13,color:"#78716C",marginTop:2}}>{patients.length} patient{patients.length!==1?"s":""} on your list</div>
       </div>
       <button onClick={()=>setShowAddModal(true)} style={{background:GB,color:"#fff",border:"none",borderRadius:10,padding:"10px 18px",fontSize:13,fontWeight:700,cursor:"pointer",boxShadow:"0 2px 8px rgba(29,78,216,.3)"}}>＋ Add Patient</button>
@@ -2129,7 +2139,7 @@ function DrPatients({ctx,drKey}){
     {!patients.length?(
       <div style={{textAlign:"center",paddingTop:60,paddingBottom:40}}>
         <div style={{fontSize:56,marginBottom:16}}>👥</div>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:8}}>No patients yet</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:8}}>No patients yet</div>
         <div style={{color:"#78716C",fontSize:14,lineHeight:1.75,maxWidth:280,margin:"0 auto 24px"}}>Add a patient using their 6-digit access code. They appear here permanently - no code needed next time.</div>
         <button onClick={()=>setShowAddModal(true)} style={{background:GB,color:"#fff",border:"none",borderRadius:12,padding:"13px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>Add First Patient</button>
       </div>
@@ -2150,7 +2160,7 @@ function DrPatients({ctx,drKey}){
                   <div style={{fontSize:12,color:"#78716C",marginTop:2}}>{pt.bloodGroup} · {pt.genotype} · Age {getAge(pt.dob)} · {pt.gender==="F"?"Female":"Male"}</div>
                 </div>
                 <div style={{textAlign:"right",flex:"none"}}>
-                  <div style={{fontSize:20,fontWeight:900,fontFamily:"'Cormorant Garant',Georgia,serif",color:GB}}>{recs.length}</div>
+                  <div style={{fontSize:20,fontWeight:900,fontFamily:"'Fraunces',Georgia,serif",color:GB}}>{recs.length}</div>
                   <div style={{fontSize:10,color:"#A8A29E",fontWeight:600}}>RECORDS</div>
                 </div>
               </div>
@@ -2169,7 +2179,7 @@ function DrPatients({ctx,drKey}){
       <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:600,display:"flex",alignItems:"flex-end"}} onClick={()=>{setShowAddModal(false);setCode("");setCodeErr("");}}>
         <div className="sheet-anim" style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",padding:"24px 20px 44px"}} onClick={e=>e.stopPropagation()}>
           <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 20px"}}/>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:4}}>Add New Patient</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:4}}>Add New Patient</div>
           <div style={{fontSize:13,color:"#78716C",marginBottom:20,lineHeight:1.65}}>Ask the patient to go to their <strong>Access tab</strong> and share their 6-digit code with you.</div>
           <Fl label="Patient Access Code">
             <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="------" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
@@ -2190,13 +2200,13 @@ function DrVisitHistory({recs,ctx}){
       <>
         <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
           <button onClick={()=>ctx.setVp(null)} style={{...S.sm("ghost"),fontSize:12,padding:"6px 12px"}}>← Back</button>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,color:GB}}>{ctx.vp.name}'s History</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,color:GB}}>{ctx.vp.name}'s History</div>
         </div>
         <FullHistory recs={allPtRecs} title={`${ctx.vp.name} - Full History`}/>
       </>
     ):(
       <>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:16}}>My Visit Records</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:16}}>My Visit Records</div>
         {!recs.length&&<Empty msg="You haven't added any visit records yet."/>}
         <RecordList recs={recs} onOpen={r=>ctx.setDetail(r)}/>
       </>
@@ -2207,10 +2217,10 @@ function DrVisitHistory({recs,ctx}){
 function DrProfile({doc,ctx}){
   const d=doc||{};
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:16}}>My Profile</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GB,marginBottom:16}}>My Profile</div>
     <div style={{...S.card,marginBottom:14,background:"linear-gradient(135deg,#1D4ED8,#2563EB)",color:"#fff",borderRadius:20}}>
       <div style={{fontSize:36,marginBottom:10}}>🩺</div>
-      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:700}}>{d.name}</div>
+      <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:700}}>{d.name}</div>
       <div style={{fontSize:13,opacity:.85,marginTop:4}}>{d.specialty}{d.subSpecialty?` · ${d.subSpecialty}`:""}</div>
       {d.qualification&&<div style={{fontSize:13,opacity:.75,marginTop:2}}>{d.qualification}</div>}
       {d.verified&&<div style={{marginTop:8,background:"rgba(255,255,255,.2)",display:"inline-block",padding:"3px 10px",borderRadius:99,fontSize:12,fontWeight:700}}>✓ MDCN Verified</div>}
@@ -2247,9 +2257,9 @@ function DrView({ctx}){
 
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
-      <div style={{background:'#0E1828',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}>
+      <div style={S.topBar(GB)}>
         <span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-app","patients")}>‹</span>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:16,fontWeight:700,flex:1}}>{p.name} | {getAge(p.dob)} | {p.gender}</div>
+        <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:16,fontWeight:700,flex:1}}>{p.name} | {getAge(p.dob)} | {p.gender}</div>
         <span style={{fontSize:12,background:"rgba(255,255,255,.2)",padding:"4px 10px",borderRadius:99,fontWeight:600}}>{p.bloodGroup}</span>
       </div>
 
@@ -2295,7 +2305,7 @@ function DrView({ctx}){
 
 function DrNewVisit({ctx}){
   return(<div style={{maxWidth:480,margin:"0 auto"}}>
-    <div style={{background:'#0E1828',color:'#EDE9E0',padding:'16px 20px',display:'flex',alignItems:'center',gap:12}}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
+    <div style={S.topBar(GB)}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
     <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }
@@ -2324,7 +2334,7 @@ function LabApp({ctx}){
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={{...S.topBar(GL),boxShadow:"0 2px 12px rgba(0,0,0,.15)"}}>
         <div style={{width:38,height:38,borderRadius:10,background:"rgba(255,255,255,.2)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:20,flex:"none"}}>🔬</div>
-        <div style={{flex:1}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:15,fontWeight:700}}>{l?.name}</div><div style={{fontSize:11,opacity:.7}}>{l?.location}</div></div>
+        <div style={{flex:1}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:15,fontWeight:700}}>{l?.name}</div><div style={{fontSize:11,opacity:.7}}>{l?.location}</div></div>
         <span style={{fontSize:12,cursor:"pointer",opacity:.8,background:"rgba(255,255,255,.15)",padding:"5px 10px",borderRadius:8,fontWeight:600}} onClick={()=>{ctx.setLab(null);ctx.setVp(null);ctx.go("landing");}}>Sign out</span>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"18px 16px 96px"}}>{PAGES[ctx.sub]??PAGES.patients}</div>
@@ -2351,10 +2361,10 @@ function LabMyPatients({ctx,labKey}){
   };
   return(<div>
     <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}}>
-      <div><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:700,color:GL}}>My Patients</div><div style={{fontSize:13,color:"#78716C",marginTop:2}}>{knownPatients.length} patient{knownPatients.length!==1?"s":""} on record</div></div>
+      <div><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:22,fontWeight:700,color:GL}}>My Patients</div><div style={{fontSize:13,color:"#78716C",marginTop:2}}>{knownPatients.length} patient{knownPatients.length!==1?"s":""} on record</div></div>
       <button onClick={()=>setShowAddModal(true)} style={{background:GL,color:"#fff",border:"none",borderRadius:10,padding:"10px 18px",fontSize:13,fontWeight:700,cursor:"pointer"}}>＋ Add Patient</button>
     </div>
-    {!knownPatients.length?(<div style={{textAlign:"center",paddingTop:60}}><div style={{fontSize:56,marginBottom:14}}>👥</div><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:8}}>No patients yet</div><div style={{color:"#78716C",fontSize:14,lineHeight:1.75,maxWidth:280,margin:"0 auto 24px"}}>Add a patient using their access code.</div><button onClick={()=>setShowAddModal(true)} style={{background:GL,color:"#fff",border:"none",borderRadius:12,padding:"13px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>Add First Patient</button></div>):(
+    {!knownPatients.length?(<div style={{textAlign:"center",paddingTop:60}}><div style={{fontSize:56,marginBottom:14}}>👥</div><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:8}}>No patients yet</div><div style={{color:"#78716C",fontSize:14,lineHeight:1.75,maxWidth:280,margin:"0 auto 24px"}}>Add a patient using their access code.</div><button onClick={()=>setShowAddModal(true)} style={{background:GL,color:"#fff",border:"none",borderRadius:12,padding:"13px 28px",fontSize:15,fontWeight:700,cursor:"pointer"}}>Add First Patient</button></div>):(
       <div style={{display:"flex",flexDirection:"column",gap:10}}>
         {knownPatients.map(pt=>{
           const recs=(DB.get(`hvng_records_${pt.phone}`)||[]).filter(r=>r.labName===ctx.lab?.name).sort((a,b)=>new Date(b.date)-new Date(a.date));
@@ -2363,7 +2373,7 @@ function LabMyPatients({ctx,labKey}){
             <div style={{display:"flex",gap:12,alignItems:"center",marginBottom:last?10:0}}>
               <div style={{width:44,height:44,borderRadius:12,background:"linear-gradient(135deg,#FEF3C7,#FDE68A)",display:"flex",alignItems:"center",justifyContent:"center",fontWeight:800,fontSize:15,color:GL,flex:"none"}}>{pt.name.split(" ").map(w=>w[0]).join("").slice(0,2)}</div>
               <div style={{flex:1}}><div style={{fontWeight:700,fontSize:15}}>{pt.name}</div><div style={{fontSize:12,color:"#78716C",marginTop:2}}>{pt.bloodGroup} · {pt.genotype} · Age {getAge(pt.dob)}</div></div>
-              <div style={{textAlign:"right"}}><div style={{fontSize:20,fontWeight:900,fontFamily:"'Cormorant Garant',Georgia,serif",color:GL}}>{recs.length}</div><div style={{fontSize:10,color:"#A8A29E",fontWeight:600}}>RESULTS</div></div>
+              <div style={{textAlign:"right"}}><div style={{fontSize:20,fontWeight:900,fontFamily:"'Fraunces',Georgia,serif",color:GL}}>{recs.length}</div><div style={{fontSize:10,color:"#A8A29E",fontWeight:600}}>RESULTS</div></div>
             </div>
             {last&&<div style={{background:"#FEF9EC",borderRadius:8,padding:"8px 12px",marginBottom:10,fontSize:12,color:"#92400E"}}><span style={{fontWeight:600}}>Last:</span> {last.title} · {last.date}</div>}
             <div style={{display:"flex",gap:8}}>
@@ -2378,7 +2388,7 @@ function LabMyPatients({ctx,labKey}){
       <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:600,display:"flex",alignItems:"flex-end"}} onClick={()=>{setShowAddModal(false);setCode("");setCodeErr("");}}>
         <div className="sheet-anim" style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",padding:"24px 20px 44px"}} onClick={e=>e.stopPropagation()}>
           <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 20px"}}/>
-          <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:4}}>Add New Patient</div>
+          <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:4}}>Add New Patient</div>
           <div style={{fontSize:13,color:"#78716C",marginBottom:20,lineHeight:1.65}}>Ask the patient to go to their <strong>Access tab</strong> and share their 6-digit code.</div>
           <Fl label="Patient Access Code">
             <input style={{...S.inp,fontSize:26,fontWeight:700,letterSpacing:10,textAlign:"center"}} placeholder="------" maxLength={6} value={code} onChange={e=>{setCode(e.target.value);setCodeErr("");}} onKeyDown={e=>e.key==="Enter"&&lookupPatient()}/>
@@ -2394,7 +2404,7 @@ function LabMyPatients({ctx,labKey}){
 
 function LabHistoryView({ctx}){
   const p=ctx.vp;
-  if(!p) return(<div style={{textAlign:"center",paddingTop:60}}><div style={{fontSize:48,marginBottom:12}}>🔍</div><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>No patient selected</div><div style={{color:"#78716C",fontSize:14}}>Go to Patients and tap a patient to view their history.</div></div>);
+  if(!p) return(<div style={{textAlign:"center",paddingTop:60}}><div style={{fontSize:48,marginBottom:12}}>🔍</div><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,marginBottom:6}}>No patient selected</div><div style={{color:"#78716C",fontSize:14}}>Go to Patients and tap a patient to view their history.</div></div>);
   const allRecs=(DB.get(`hvng_records_${p.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   return(<FullHistory recs={allRecs} title={`${p.name} - Full History`}/>);
 }
@@ -2447,7 +2457,7 @@ function LabEntry({ctx,labKey}){
   };
 
   if(!p) return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:14}}>Post Lab Result</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:14}}>Post Lab Result</div>
     <div style={{...S.card,background:"#FEF3C7",border:"1.5px solid #FCD34D",marginBottom:16,padding:"12px 14px"}}><div style={{fontSize:12,fontWeight:600,color:"#92400E"}}>🔬 {ctx.lab?.name} · {ctx.lab?.location}</div></div>
     <div style={S.card}>
       <div style={{textAlign:"center",padding:"24px 0"}}><div style={{fontSize:40,marginBottom:10}}>👥</div><div style={{fontSize:14,color:"#78716C",marginBottom:16}}>Select a patient from the Patients tab, or add one using an access code.</div></div>
@@ -2456,7 +2466,7 @@ function LabEntry({ctx,labKey}){
   </div>);
 
   return(<div>
-    <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:14}}>Post Lab Result</div>
+    <div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:20,fontWeight:700,color:GL,marginBottom:14}}>Post Lab Result</div>
     <div style={S.card}>
       <div style={{background:"#FEF3C7",border:"1.5px solid #FCD34D",borderRadius:10,padding:"10px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
         <div style={{display:"flex",gap:14,flexWrap:"wrap"}}>
@@ -2562,7 +2572,7 @@ function Sheet({children,onClose,title}){
     <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.55)",zIndex:500,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
       <div className="sheet-anim" style={{background:"#fff",borderRadius:"20px 20px 0 0",width:"100%",maxHeight:"90vh",overflowY:"auto",padding:"20px 20px 48px"}} onClick={e=>e.stopPropagation()}>
         <div style={{width:40,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 20px"}}/>
-        {title&&<div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:16}}>{title}</div>}
+        {title&&<div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:18,fontWeight:700,marginBottom:16}}>{title}</div>}
         {children}
       </div>
     </div>
@@ -2571,7 +2581,7 @@ function Sheet({children,onClose,title}){
 
 function CharCount({val,max}){const len=(val||"").length;const near=len>max*.85;const over=len>=max;if(!len)return null;return(<div style={{textAlign:"right",fontSize:11,marginTop:3,color:over?"#DC2626":near?"#D97706":"#A8A29E",fontWeight:near?600:400}}>{len}/{max}</div>);}
 function Centered({children,pad="0 24px"}){return <div style={{maxWidth:420,margin:"0 auto",padding:pad}}>{children}</div>;}
-function PageTitle({title,sub,color=G}){return <div style={{padding:"44px 0 22px",textAlign:"center"}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:26,fontWeight:700,color}}>{title}</div>{sub&&<div style={{color:"#78716C",fontSize:14,marginTop:5}}>{sub}</div>}</div>;}
+function PageTitle({title,sub,color=G}){return <div style={{padding:"44px 0 22px",textAlign:"center"}}><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:26,fontWeight:700,color}}>{title}</div>{sub&&<div style={{color:"#78716C",fontSize:14,marginTop:5}}>{sub}</div>}</div>;}
 function Fl({label,children}){return <div style={{marginBottom:14}}><label style={S.lbl}>{label}</label>{children}</div>;}
 function SectionHead({children,color=G}){return <div style={{fontWeight:700,fontSize:13,color,marginBottom:14,marginTop:8,paddingTop:14,borderTop:"1.5px solid #EAE8E3"}}>{children}</div>;}
 function Back({onClick}){return <div style={{textAlign:"center",marginTop:16}}><span style={{fontSize:13,color:"#78716C",cursor:"pointer"}} onClick={onClick}>← Back</span></div>;}

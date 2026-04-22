@@ -270,7 +270,7 @@ const G="#14532D",GB="#1D4ED8",GL="#B45309",GP="#0891B2",GA="#EAB308";
 const S={
   page:{minHeight:"100vh",background:"#F5F4F0",fontFamily:"'DM Sans',system-ui,sans-serif",color:"#1C1917"},
   card:{background:"#fff",borderRadius:16,padding:"20px 22px",border:"1px solid #EAE8E3",boxShadow:"0 2px 8px rgba(0,0,0,.05),0 0 1px rgba(0,0,0,.06)"},
-  inp:{width:"100%",padding:"12px 14px",borderRadius:10,border:"1.5px solid #D6D3CE",fontSize:15,background:"#FAFAF9",outline:"none",boxSizing:"border-box",fontFamily:"inherit",transition:"border .15s"},
+  inp:{width:"100%",padding:"12px 14px",borderRadius:10,border:"1.5px solid #D6D3CE",fontSize:15,background:"#FAFAF9",outline:"none",boxSizing:"border-box",fontFamily:"inherit",transition:"border .15s",color:"#1C1917",WebkitTextFillColor:"#1C1917"},
   lbl:{fontSize:11,fontWeight:700,color:"#6B6862",marginBottom:5,display:"block",textTransform:"uppercase",letterSpacing:.6},
   btnG:{width:"100%",padding:14,borderRadius:12,background:G,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(20,83,45,.25)"},
   btnB:{width:"100%",padding:14,borderRadius:12,background:GB,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(29,78,216,.2)"},
@@ -1654,7 +1654,7 @@ function PtApp({ctx}){
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   const TABS=[{id:"dashboard",icon:"🏠",label:"Dashboard"},{id:"history",icon:"📋",label:"History"},{id:"documents",icon:"📄",label:"Documents"},{id:"access",icon:"🔐",label:"Share"}];
-  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
+  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs} showFamily={showFamily} setShowFamily={setShowFamily}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={S.topBar(G)}>
@@ -1683,7 +1683,7 @@ function PtApp({ctx}){
 }
 
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
-function PatientDashboard({ctx,recs}){
+function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
   const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);

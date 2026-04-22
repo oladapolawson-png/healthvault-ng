@@ -884,10 +884,7 @@ function AISummaryModal({patient,recs,onClose,flash}){
     const sorted = (recs||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
     const episodes = sorted.slice(0,8).map(r=>{
       const f=r.fields||{};
-      return {date:r.date,type:CARE[r.careType]?.label||r.careType,title:r.title,
-        diagnosis:f.diagnosis||f.condition||null,treatment:f.treatment||null,
-        bp:f.bp||null,weight:f.weight||null,glucose:f.bloodGlucose||null,
-        labs:f.testCategory?{test:f.testType||f.testCategory,result:f.result||f.value,status:f.resultStatus}:null,
+      return {date:r.date,type:CARE[r.careType]?.label||r.careType,title:r.title,diagnosis:f.diagnosis||f.condition||null,treatment:f.treatment||null,bp:f.bp||null,weight:f.weight||null,glucose:f.bloodGlucose||null,labs:f.testCategory?{test:f.testType||f.testCategory,result:f.result||f.value,status:f.resultStatus}:null,
         pharmacy:r.careType==="PHARMACY"?{drug:f.genericName,dose:f.dose,freq:f.frequency,indication:f.indication}:null,
         notes:f.notes||null};
     });

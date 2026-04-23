@@ -1657,7 +1657,7 @@ function PtApp({ctx}){
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   const TABS=[{id:"dashboard",icon:"🏠",label:"Dashboard"},{id:"history",icon:"📋",label:"History"},{id:"documents",icon:"📄",label:"Documents"},{id:"access",icon:"🔐",label:"Share"}];
-  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
+  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs} showFamily={showFamily} setShowFamily={setShowFamily}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={S.topBar(G)}>
@@ -1686,7 +1686,7 @@ function PtApp({ctx}){
 }
 
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
-function PatientDashboard({ctx,recs}){
+function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
   const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);

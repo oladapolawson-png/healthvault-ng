@@ -1678,8 +1678,8 @@ function PtApp({ctx}){
         </div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"16px 14px 90px"}}>{PAGES[ctx.sub]??PAGES.dashboard}</div>
-      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1.5px solid #F0EDE8",display:"flex",zIndex:50,boxShadow:"0 -4px 20px rgba(0,0,0,.06)"}}>
-        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderTop:ctx.sub===t.id?"3px solid "+G:"3px solid transparent"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:18}}>{t.icon}</div><div style={{fontSize:10,color:ctx.sub===t.id?G:"#78716C",fontWeight:ctx.sub===t.id?700:400,marginTop:1}}>{t.label}</div></div>)}
+      <div style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",width:"calc(100% - 32px)",maxWidth:448,background:"rgba(12,26,16,0.92)",backdropFilter:"blur(16px)",borderRadius:20,display:"flex",zIndex:50,boxShadow:"0 8px 32px rgba(0,0,0,0.25),0 0 0 1px rgba(255,255,255,0.08)",padding:"4px"}}>
+        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderRadius:16,background:ctx.sub===t.id?"rgba(61,122,82,0.5)":"transparent",transition:"all .25s"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:19}}>{t.icon}</div><div style={{fontSize:9,color:ctx.sub===t.id?"#86EFAC":"rgba(237,233,224,0.45)",fontWeight:ctx.sub===t.id?700:400,marginTop:2,letterSpacing:"0.06em",textTransform:"uppercase"}}>{t.label}</div></div>)}
       </div>
     </div>
   );
@@ -2299,7 +2299,7 @@ function DrView({ctx}){
 function DrNewVisit({ctx}){
   return(<div style={{maxWidth:480,margin:"0 auto"}}>
     <div style={S.topBar(GB)}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
-    <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
+    <div style={{padding:"18px 14px 60px"}}><button onClick={()=>ctx.setSub("patients")} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#78716C",fontSize:13,cursor:"pointer",marginBottom:12,padding:0}}>← Back</button><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }
 

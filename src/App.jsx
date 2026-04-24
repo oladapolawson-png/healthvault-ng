@@ -1353,6 +1353,97 @@ function FamilyModal({user,onClose,flash,onSwitch}){
 }
 
 
+// ── DRUG SCAN MODAL ───────────────────────────────────────────────
+function DrugScanModal({onClose,flash,canAddRecord=false,onAddRecord}){
+  const [result,setResult]=useState(null);
+  const [showInfo,setShowInfo]=useState(false);
+  const fileRef=useRef();
+  const [scanning,setScanning]=useState(false);
+
+  const scan=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    setScanning(true);setResult(null);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type,data:dataUrl.split(",")[1]}},{type:"text",text:"Read this drug/medication packaging. Extract: genericName, brandName, dose, frequency, nafdac, manufacturer, expiryDate, indication. Return ONLY valid JSON. If unclear return {error:'Cannot read packaging clearly'}"}]}]})});
+      const data=await res.json();
+      const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
+      const parsed=JSON.parse(text);
+      if(parsed.error){flash(parsed.error,"err");}
+      else{setResult(parsed);flash("Drug scanned successfully!");}
+    }catch(e){flash("Could not scan - try a clearer photo","err");}
+    setScanning(false);e.target.value="";
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>📷 Drug Photo Scanner</div>
+        <div style={{fontSize:12,color:"#78716C",marginBottom:20,lineHeight:1.6}}>Take a photo of any drug packaging. AI will read the NAFDAC number, name, dose and frequency automatically.</div>
+
+        <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={scan}/>
+        <button onClick={()=>fileRef.current.click()} style={{width:"100%",padding:14,borderRadius:12,background:scanning?"#F3F1EC":"#0C1A10",color:scanning?"#78716C":"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:14,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+          {scanning?"Scanning packaging...":"📷 Take Photo of Drug Packaging"}
+        </button>
+
+        {result&&(<>
+          <div style={{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:14,padding:"16px",marginBottom:14}}>
+            <div style={{fontWeight:700,fontSize:15,color:"#14532D",marginBottom:12}}>{result.brandName||result.genericName}</div>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              {[["Generic Name",result.genericName],["Dose",result.dose],["Frequency",result.frequency],["NAFDAC No.",result.nafdac],["Manufacturer",result.manufacturer],["Expiry",result.expiryDate]].filter(([,v])=>v).map(([l,v])=>(
+                <div key={l}><div style={{fontSize:10,color:"#166534",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:13,color:"#1A1916",fontWeight:500}}>{v}</div></div>
+              ))}
+            </div>
+          </div>
+          <button onClick={()=>setShowInfo(true)} style={{width:"100%",padding:12,borderRadius:11,background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",cursor:"pointer",fontWeight:600,fontSize:13,marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+            💊 Get Full Drug Information & Safety Guide
+          </button>
+          {canAddRecord&&onAddRecord&&<button onClick={()=>{onAddRecord(result);onClose();}} style={{width:"100%",padding:12,borderRadius:11,background:G,color:"#fff",border:"none",cursor:"pointer",fontWeight:600,fontSize:13,marginBottom:8}}>
+            + Add to My Medication Records
+          </button>}
+          {showInfo&&result.genericName&&<DrugInfoModal drug={result.genericName} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
+        </>)}
+        <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14,marginTop:4}} onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+// ── DRUG LOOKUP MODAL ─────────────────────────────────────────────
+function DrugLookupModal({onClose,flash}){
+  const [query,setQuery]=useState("");
+  const [showInfo,setShowInfo]=useState(false);
+  const [drug,setDrug]=useState("");
+
+  const search=()=>{
+    if(!query.trim()){flash("Enter a drug name","err");return;}
+    setDrug(query.trim());setShowInfo(true);
+  };
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+      <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>💊 Drug Information</div>
+        <div style={{fontSize:12,color:"#78716C",marginBottom:20,lineHeight:1.6}}>Search any drug to get full information including side effects, interactions, Nigerian brands and safety guide.</div>
+        <div style={{display:"flex",gap:8,marginBottom:20}}>
+          <input style={{...S.inp,flex:1}} placeholder="e.g. Amlodipine, Paracetamol" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()}/>
+          <button onClick={search} style={{padding:"13px 18px",borderRadius:11,background:"#0C1A10",color:"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:13,flex:"none"}}>Search</button>
+        </div>
+        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:16}}>
+          {["Paracetamol","Amoxicillin","Amlodipine","Metformin","Artemether","Lisinopril","Omeprazole"].map(d=>(
+            <button key={d} onClick={()=>{setQuery(d);setDrug(d);setShowInfo(true);}} style={{padding:"5px 12px",borderRadius:99,background:"#F0FDF4",color:G,border:"1px solid #BBF7D0",fontSize:12,cursor:"pointer",fontWeight:500}}>{d}</button>
+          ))}
+        </div>
+        {showInfo&&drug&&<DrugInfoModal drug={drug} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
+        <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14}} onClick={onClose}>Close</button>
+      </div>
+    </div>
+  );
+}
+
+
 // ── LANDING ───────────────────────────────────────────────────────
 function Landing({ctx}){
   const [active,setActive]=useState(null);
@@ -2053,7 +2144,7 @@ function DrRegister({ctx}){
         <Fl label="Password *"><input type="password" style={S.inp} placeholder="Min 6 chars" value={f.password} onChange={e=>upd("password",e.target.value)}/></Fl>
         <Fl label="Confirm Password *"><input type="password" style={S.inp} value={f.confirmPw} onChange={e=>upd("confirmPw",e.target.value)}/></Fl>
       </div>
-      <Fl label="Phone Number"><input style={S.inp} placeholder="e.g. 08012345678" value={f.phone} onChange={e=>upd("phone",e.target.value)} maxLength={11}/></Fl>
+      <Fl label="Phone Number"><input style={S.inp} type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="e.g. 08012345678" value={f.phone} onChange={e=>upd("phone",e.target.value)} maxLength={11}/></Fl>
       <SectionHead color={GB}>🏥 Professional Details</SectionHead>
       <Fl label="MDCN Number"><input style={S.inp} placeholder="e.g. MDCN/2015/00123" value={f.mdcn} onChange={e=>upd("mdcn",e.target.value)}/></Fl>
       <Fl label="Primary Qualification"><input style={S.inp} placeholder="e.g. MBBS (Lagos), FMCP, FWACS" value={f.qualification} onChange={e=>upd("qualification",e.target.value)}/></Fl>

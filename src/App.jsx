@@ -333,7 +333,7 @@ export default function App(){
   };
 
   return(<>
-    <style>{`*{margin:0;padding:0;box-sizing:border-box} input,select,textarea{color:#1A1916!important;-webkit-text-fill-color:#1A1916!important;opacity:1!important} input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-text-fill-color:#1A1916!important;-webkit-box-shadow:0 0 0 1000px #FAFAF8 inset!important} input:focus,select:focus,textarea:focus{border-color:#3D7A52!important;box-shadow:0 0 0 3px rgba(61,122,82,.1)!important} @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} @keyframes sheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}} .fade{animation:slideUp .2s ease} .sheet-anim{animation:sheetIn .28s ease} ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#D0CEC9;border-radius:99px} @media(min-width:768px){.dsbar{display:flex!important}}`}</style>
+    <style>{`*{margin:0;padding:0;box-sizing:border-box} input:focus,select:focus,textarea:focus{border-color:#14532D!important;box-shadow:0 0 0 3px rgba(20,83,45,.1)!important} @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} @keyframes sheetIn{from{transform:translateY(100%)}to{transform:translateY(0)}} .fade{animation:slideUp .2s ease} .sheet-anim{animation:sheetIn .28s ease} ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-thumb{background:#D0CEC9;border-radius:99px} @media(min-width:768px){.dsbar{display:flex!important}}`}</style>
     {/* Desktop shell */}
     <div style={{minHeight:"100vh",background:"#0F3D23",display:"flex"}}>
       <div className="dsbar" style={{display:"none",width:340,flexDirection:"column",justifyContent:"center",padding:"60px 44px",color:"#fff",flexShrink:0}}>
@@ -363,8 +363,6 @@ export default function App(){
             {modal==="vitals"&&(user||vp)&&<VitalTrends recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)}/>}
             {modal==="hmo"&&user&&<HMOCardModal user={user} onClose={()=>setModal(null)} flash={flash} onSave={(hmo)=>{const users=DB.get("hvng_users")||[];const updated=users.map(u=>u.phone===user.phone?{...u,hmo}:u);DB.set("hvng_users",updated);setUser({...user,hmo});setModal(null);}}/>}
             {modal==="summary"&&(user||vp)&&<AISummaryModal patient={user||vp} recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)} flash={flash}/>}
-            {modal==="drugscan"&&<DrugScanModal onClose={()=>setModal(null)} flash={flash}/>}
-            {modal==="druglookup"&&<DrugLookupModal onClose={()=>setModal(null)} flash={flash}/>}
           </div>
         </div>
       </div>
@@ -1166,7 +1164,11 @@ function DrugInfoModal({drug,userMeds,onClose}){
   useEffect(()=>{
     const fetch_info=async()=>{
       const otherMeds=userMeds.filter(m=>m!==drug).join(", ")||"None";
-      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"\nOther medications the patient is on: "+otherMeds+"\n\nReturn a JSON object ONLY with these fields:\n{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
+      const prompt="You are a clinical pharmacist in Nigeria. Provide comprehensive information about this drug for a Nigerian patient. Drug: "+drug+"
+Other medications the patient is on: "+otherMeds+"
+
+Return a JSON object ONLY with these fields:
+{name, genericName, category, howItWorks, uses, sideEffects: [list], seriousWarnings: [list], interactions: [list with "+otherMeds+"], missedDose, storage, nafdacStatus, nigerianBrands: [list with prices in NGN], dosageNote, pregnancySafe, breastfeedingSafe, alcoholWarning}";
       try{
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,messages:[{role:"user",content:prompt}]})});
         const data=await res.json();
@@ -1355,97 +1357,6 @@ function FamilyModal({user,onClose,flash,onSwitch}){
 }
 
 
-// ── DRUG SCAN MODAL ───────────────────────────────────────────────
-function DrugScanModal({onClose,flash,canAddRecord=false,onAddRecord}){
-  const [result,setResult]=useState(null);
-  const [showInfo,setShowInfo]=useState(false);
-  const fileRef=useRef();
-  const [scanning,setScanning]=useState(false);
-
-  const scan=async(e)=>{
-    const file=e.target.files[0];if(!file)return;
-    setScanning(true);setResult(null);
-    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
-    try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type,data:dataUrl.split(",")[1]}},{type:"text",text:"Read this drug/medication packaging. Extract: genericName, brandName, dose, frequency, nafdac, manufacturer, expiryDate, indication. Return ONLY valid JSON. If unclear return {error:'Cannot read packaging clearly'}"}]}]})});
-      const data=await res.json();
-      const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
-      const parsed=JSON.parse(text);
-      if(parsed.error){flash(parsed.error,"err");}
-      else{setResult(parsed);flash("Drug scanned successfully!");}
-    }catch(e){flash("Could not scan - try a clearer photo","err");}
-    setScanning(false);e.target.value="";
-  };
-
-  return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
-      <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
-        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>📷 Drug Photo Scanner</div>
-        <div style={{fontSize:12,color:"#78716C",marginBottom:20,lineHeight:1.6}}>Take a photo of any drug packaging. AI will read the NAFDAC number, name, dose and frequency automatically.</div>
-
-        <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={scan}/>
-        <button onClick={()=>fileRef.current.click()} style={{width:"100%",padding:14,borderRadius:12,background:scanning?"#F3F1EC":"#0C1A10",color:scanning?"#78716C":"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:14,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-          {scanning?"Scanning packaging...":"📷 Take Photo of Drug Packaging"}
-        </button>
-
-        {result&&(<>
-          <div style={{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:14,padding:"16px",marginBottom:14}}>
-            <div style={{fontWeight:700,fontSize:15,color:"#14532D",marginBottom:12}}>{result.brandName||result.genericName}</div>
-            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-              {[["Generic Name",result.genericName],["Dose",result.dose],["Frequency",result.frequency],["NAFDAC No.",result.nafdac],["Manufacturer",result.manufacturer],["Expiry",result.expiryDate]].filter(([,v])=>v).map(([l,v])=>(
-                <div key={l}><div style={{fontSize:10,color:"#166534",fontWeight:700,textTransform:"uppercase",letterSpacing:.5,marginBottom:2}}>{l}</div><div style={{fontSize:13,color:"#1A1916",fontWeight:500}}>{v}</div></div>
-              ))}
-            </div>
-          </div>
-          <button onClick={()=>setShowInfo(true)} style={{width:"100%",padding:12,borderRadius:11,background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",cursor:"pointer",fontWeight:600,fontSize:13,marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
-            💊 Get Full Drug Information & Safety Guide
-          </button>
-          {canAddRecord&&onAddRecord&&<button onClick={()=>{onAddRecord(result);onClose();}} style={{width:"100%",padding:12,borderRadius:11,background:G,color:"#fff",border:"none",cursor:"pointer",fontWeight:600,fontSize:13,marginBottom:8}}>
-            + Add to My Medication Records
-          </button>}
-          {showInfo&&result.genericName&&<DrugInfoModal drug={result.genericName} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
-        </>)}
-        <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14,marginTop:4}} onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-}
-
-// ── DRUG LOOKUP MODAL ─────────────────────────────────────────────
-function DrugLookupModal({onClose,flash}){
-  const [query,setQuery]=useState("");
-  const [showInfo,setShowInfo]=useState(false);
-  const [drug,setDrug]=useState("");
-
-  const search=()=>{
-    if(!query.trim()){flash("Enter a drug name","err");return;}
-    setDrug(query.trim());setShowInfo(true);
-  };
-
-  return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
-      <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
-        <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
-        <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>💊 Drug Information</div>
-        <div style={{fontSize:12,color:"#78716C",marginBottom:20,lineHeight:1.6}}>Search any drug to get full information including side effects, interactions, Nigerian brands and safety guide.</div>
-        <div style={{display:"flex",gap:8,marginBottom:20}}>
-          <input style={{...S.inp,flex:1}} placeholder="e.g. Amlodipine, Paracetamol" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()}/>
-          <button onClick={search} style={{padding:"13px 18px",borderRadius:11,background:"#0C1A10",color:"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:13,flex:"none"}}>Search</button>
-        </div>
-        <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:16}}>
-          {["Paracetamol","Amoxicillin","Amlodipine","Metformin","Artemether","Lisinopril","Omeprazole"].map(d=>(
-            <button key={d} onClick={()=>{setQuery(d);setDrug(d);setShowInfo(true);}} style={{padding:"5px 12px",borderRadius:99,background:"#F0FDF4",color:G,border:"1px solid #BBF7D0",fontSize:12,cursor:"pointer",fontWeight:500}}>{d}</button>
-          ))}
-        </div>
-        {showInfo&&drug&&<DrugInfoModal drug={drug} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
-        <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14}} onClick={onClose}>Close</button>
-      </div>
-    </div>
-  );
-}
-
-
 // ── LANDING ───────────────────────────────────────────────────────
 function Landing({ctx}){
   const [active,setActive]=useState(null);
@@ -1457,7 +1368,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#1C2B1E 0%,#0E1610 100%)",
      accent:"#3D7A52",glow:"rgba(61,122,82,0.28)",border:"rgba(61,122,82,0.2)",
      rotate:"-2.5deg",ox:"-10px",oy:"10px",
-     headline:"Your health,\nyour record.",
+     headline:"Your health,
+your record.",
      desc:"A complete picture of your health - visits, medications, lab results in plain English - always in your pocket.",
      features:["Plain-language lab results","Medication tracker & photo scan","HMO card, always accessible","Share records in one tap","Works without internet"],
      cta:"Open My Health Folder",note:"Login with phone number",
@@ -1468,7 +1380,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#1A2232 0%,#0E1420 100%)",
      accent:"#4A7BB5",glow:"rgba(74,123,181,0.28)",border:"rgba(74,123,181,0.2)",
      rotate:"0.5deg",ox:"0px",oy:"0px",
-     headline:"Every patient.\nOne place.",
+     headline:"Every patient.
+One place.",
      desc:"Access complete patient histories, document consultations with AI, generate referral letters and clinical summaries in seconds.",
      features:["AI-powered clinical summaries","Structured consultation notes","One-tap referral letters","Patient access via secure code","MDCN verified portal"],
      cta:"Enter Clinician Portal",note:"MDCN registration required",
@@ -1479,7 +1392,8 @@ function Landing({ctx}){
      bg:"linear-gradient(145deg,#261C10 0%,#160F08 100%)",
      accent:"#B5834A",glow:"rgba(181,131,74,0.28)",border:"rgba(181,131,74,0.2)",
      rotate:"2.5deg",ox:"10px",oy:"10px",
-     headline:"Results posted.\nRecords updated.",
+     headline:"Results posted.
+Records updated.",
      desc:"Post structured diagnostic results directly to patient records with AI-assisted data entry. All standard Nigerian formats supported.",
      features:["AI auto-fills from results","Malaria, FBC, Blood Sugar","Urinalysis, Lipid, Typhoid","Faecal analysis","CAC verified labs only"],
      cta:"Enter Lab Portal",note:"CAC registration required",
@@ -1750,7 +1664,7 @@ function PtApp({ctx}){
   const unread=notifs.filter(n=>!n.read).length;
   const allRecs=(DB.get(`hvng_records_${u?.phone}`)||[]).sort((a,b)=>new Date(b.date)-new Date(a.date));
   const TABS=[{id:"dashboard",icon:"🏠",label:"Dashboard"},{id:"history",icon:"📋",label:"History"},{id:"documents",icon:"📄",label:"Documents"},{id:"access",icon:"🔐",label:"Share"}];
-  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs} showFamily={showFamily} setShowFamily={setShowFamily}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
+  const PAGES={dashboard:<PatientDashboard ctx={ctx} recs={allRecs}/>,history:<PatientHistory ctx={ctx} recs={allRecs}/>,documents:<PatientDocuments ctx={ctx}/>,access:<AccessManager ctx={ctx}/>};
   return(
     <div style={{maxWidth:480,margin:"0 auto",display:"flex",flexDirection:"column",minHeight:"100vh"}}>
       <div style={S.topBar(G)}>
@@ -1771,15 +1685,15 @@ function PtApp({ctx}){
         </div>
       </div>
       <div style={{flex:1,overflowY:"auto",padding:"16px 14px 90px"}}>{PAGES[ctx.sub]??PAGES.dashboard}</div>
-      <div style={{position:"fixed",bottom:20,left:"50%",transform:"translateX(-50%)",width:"calc(100% - 32px)",maxWidth:448,background:"rgba(12,26,16,0.92)",backdropFilter:"blur(16px)",borderRadius:20,display:"flex",zIndex:50,boxShadow:"0 8px 32px rgba(0,0,0,0.25),0 0 0 1px rgba(255,255,255,0.08)",padding:"4px"}}>
-        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderRadius:16,background:ctx.sub===t.id?"rgba(61,122,82,0.5)":"transparent",transition:"all .25s"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:19}}>{t.icon}</div><div style={{fontSize:9,color:ctx.sub===t.id?"#86EFAC":"rgba(237,233,224,0.45)",fontWeight:ctx.sub===t.id?700:400,marginTop:2,letterSpacing:"0.06em",textTransform:"uppercase"}}>{t.label}</div></div>)}
+      <div style={{position:"fixed",bottom:0,left:"50%",transform:"translateX(-50%)",width:"100%",maxWidth:480,background:"#fff",borderTop:"1.5px solid #F0EDE8",display:"flex",zIndex:50,boxShadow:"0 -4px 20px rgba(0,0,0,.06)"}}>
+        {TABS.map(t=><div key={t.id} style={{flex:1,padding:"10px 0",textAlign:"center",cursor:"pointer",borderTop:ctx.sub===t.id?"3px solid "+G:"3px solid transparent"}} onClick={()=>ctx.setSub(t.id)}><div style={{fontSize:18}}>{t.icon}</div><div style={{fontSize:10,color:ctx.sub===t.id?G:"#78716C",fontWeight:ctx.sub===t.id?700:400,marginTop:1}}>{t.label}</div></div>)}
       </div>
     </div>
   );
 }
 
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
-function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
+function PatientDashboard({ctx,recs}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
   const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);
@@ -2146,7 +2060,7 @@ function DrRegister({ctx}){
         <Fl label="Password *"><input type="password" style={S.inp} placeholder="Min 6 chars" value={f.password} onChange={e=>upd("password",e.target.value)}/></Fl>
         <Fl label="Confirm Password *"><input type="password" style={S.inp} value={f.confirmPw} onChange={e=>upd("confirmPw",e.target.value)}/></Fl>
       </div>
-      <Fl label="Phone Number"><input style={S.inp} type="tel" inputMode="numeric" pattern="[0-9]*" placeholder="e.g. 08012345678" value={f.phone} onChange={e=>upd("phone",e.target.value)} maxLength={11}/></Fl>
+      <Fl label="Phone Number"><input style={S.inp} placeholder="e.g. 08012345678" value={f.phone} onChange={e=>upd("phone",e.target.value)} maxLength={11}/></Fl>
       <SectionHead color={GB}>🏥 Professional Details</SectionHead>
       <Fl label="MDCN Number"><input style={S.inp} placeholder="e.g. MDCN/2015/00123" value={f.mdcn} onChange={e=>upd("mdcn",e.target.value)}/></Fl>
       <Fl label="Primary Qualification"><input style={S.inp} placeholder="e.g. MBBS (Lagos), FMCP, FWACS" value={f.qualification} onChange={e=>upd("qualification",e.target.value)}/></Fl>
@@ -2392,7 +2306,7 @@ function DrView({ctx}){
 function DrNewVisit({ctx}){
   return(<div style={{maxWidth:480,margin:"0 auto"}}>
     <div style={S.topBar(GB)}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
-    <div style={{padding:"18px 14px 60px"}}><button onClick={()=>ctx.setSub("patients")} style={{display:"flex",alignItems:"center",gap:6,background:"none",border:"none",color:"#78716C",fontSize:13,cursor:"pointer",marginBottom:12,padding:0}}>← Back</button><AddRecord ctx={ctx} isDr={true}/></div>
+    <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }
 

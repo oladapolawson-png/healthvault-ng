@@ -363,6 +363,8 @@ export default function App(){
             {modal==="vitals"&&(user||vp)&&<VitalTrends recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)}/>}
             {modal==="hmo"&&user&&<HMOCardModal user={user} onClose={()=>setModal(null)} flash={flash} onSave={(hmo)=>{const users=DB.get("hvng_users")||[];const updated=users.map(u=>u.phone===user.phone?{...u,hmo}:u);DB.set("hvng_users",updated);setUser({...user,hmo});setModal(null);}}/>}
             {modal==="summary"&&(user||vp)&&<AISummaryModal patient={user||vp} recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)} flash={flash}/>}
+            {modal==="drugscan"&&<DrugScanModal onClose={()=>setModal(null)} flash={flash}/>}
+            {modal==="druglookup"&&<DrugLookupModal onClose={()=>setModal(null)} flash={flash}/>}
           </div>
         </div>
       </div>

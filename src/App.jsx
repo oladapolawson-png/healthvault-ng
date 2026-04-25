@@ -275,6 +275,7 @@ const S={
   btnG:{width:"100%",padding:14,borderRadius:12,background:G,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(20,83,45,.25)"},
   btnB:{width:"100%",padding:14,borderRadius:12,background:GB,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(29,78,216,.2)"},
   btnL:{width:"100%",padding:14,borderRadius:12,background:GL,color:"#fff",fontSize:15,fontWeight:700,border:"none",cursor:"pointer",boxShadow:"0 2px 8px rgba(180,83,9,.2)"},
+  btnGhost:{width:"100%",padding:"14px",borderRadius:12,background:"transparent",color:"#57534E",fontSize:14,fontWeight:500,border:"1.5px solid #E0DDD8",cursor:"pointer"},
   sm:(v="g")=>({padding:"9px 16px",borderRadius:10,border:"none",cursor:"pointer",fontSize:13,fontWeight:600,
     background:v==="g"?G:v==="b"?GB:v==="l"?GL:v==="r"?"#DC2626":"transparent",
     color:v==="ghost"?G:"#fff",border:v==="ghost"?`1.5px solid ${G}`:"none"}),
@@ -360,6 +361,8 @@ export default function App(){
             {modal==="referral"&&vp&&<ReferralLetter pt={vp} doc={doc} recs={DB.get(`hvng_records_${vp.phone}`)||[]} onClose={()=>setModal(null)} flash={flash}/>}
             {modal==="vaccinations"&&user&&<VaccinationSheet user={user} setUser={setUser} onClose={()=>setModal(null)} flash={flash}/>}
             {modal==="maternal"&&(user||vp)&&<MaternalDashboard recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} user={user||vp} onClose={()=>setModal(null)}/>}
+            {modal==="drugscan"&&<DrugScanModal onClose={()=>setModal(null)} flash={flash}/>}
+            {modal==="druglookup"&&<DrugLookupModal onClose={()=>setModal(null)} flash={flash}/>}
             {modal==="vitals"&&(user||vp)&&<VitalTrends recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)}/>}
             {modal==="hmo"&&user&&<HMOCardModal user={user} onClose={()=>setModal(null)} flash={flash} onSave={(hmo)=>{const users=DB.get("hvng_users")||[];const updated=users.map(u=>u.phone===user.phone?{...u,hmo}:u);DB.set("hvng_users",updated);setUser({...user,hmo});setModal(null);}}/>}
             {modal==="summary"&&(user||vp)&&<AISummaryModal patient={user||vp} recs={DB.get(`hvng_records_${(user||vp).phone}`)||[]} onClose={()=>setModal(null)} flash={flash}/>}
@@ -1353,6 +1356,80 @@ function FamilyModal({user,onClose,flash,onSwitch}){
 }
 
 
+
+// ── DRUG SCAN MODAL ─────────────────────────────────────────────
+function DrugScanModal({onClose,flash}){
+  const [result,setResult]=useState(null);
+  const [showInfo,setShowInfo]=useState(false);
+  const [scanning,setScanning]=useState(false);
+  const fileRef=useRef();
+  const scan=async(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    setScanning(true);setResult(null);
+    const dataUrl=await new Promise(res=>{const r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(file);});
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:400,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:file.type,data:dataUrl.split(",")[1]}},{type:"text",text:"Read this drug packaging. Extract: genericName, brandName, dose, frequency, nafdac, manufacturer, expiryDate. Return ONLY valid JSON. If unclear return {error:'Cannot read packaging'}"}]}]})});
+      const data=await res.json();
+      const text=data.content?.map(b=>b.text||"").join("").replace(/```json|```/g,"").trim();
+      const parsed=JSON.parse(text);
+      if(parsed.error){flash(parsed.error,"err");}else{setResult(parsed);flash("Drug scanned!");}
+    }catch(e){flash("Could not scan - try a clearer photo","err");}
+    setScanning(false);e.target.value="";
+  };
+  return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+    <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+      <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>📷 Drug Photo Scanner</div>
+      <div style={{fontSize:12,color:"#78716C",marginBottom:20,lineHeight:1.6}}>Photograph any drug packaging. AI reads NAFDAC number, name and dose instantly.</div>
+      <input ref={fileRef} type="file" accept="image/*" capture="environment" style={{display:"none"}} onChange={scan}/>
+      <button onClick={()=>fileRef.current.click()} style={{width:"100%",padding:14,borderRadius:12,background:scanning?"#F3F1EC":"#0C1A10",color:scanning?"#78716C":"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:14,marginBottom:16,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+        {scanning?"Scanning...":"📷 Take Photo of Drug Packaging"}
+      </button>
+      {result&&(<>
+        <div style={{background:"#F0FDF4",border:"1px solid #BBF7D0",borderRadius:14,padding:"16px",marginBottom:14}}>
+          <div style={{fontWeight:700,fontSize:15,color:"#14532D",marginBottom:10}}>{result.brandName||result.genericName}</div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+            {[["Generic",result.genericName],["Dose",result.dose],["Frequency",result.frequency],["NAFDAC",result.nafdac],["Manufacturer",result.manufacturer],["Expiry",result.expiryDate]].filter(([,v])=>v).map(([l,v])=>(
+              <div key={l}><div style={{fontSize:10,color:"#166534",fontWeight:700,textTransform:"uppercase",marginBottom:2}}>{l}</div><div style={{fontSize:13,fontWeight:500}}>{v}</div></div>
+            ))}
+          </div>
+        </div>
+        {showInfo&&result.genericName&&<DrugInfoModal drug={result.genericName} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
+        <button onClick={()=>setShowInfo(true)} style={{width:"100%",padding:12,borderRadius:11,background:"#EFF6FF",color:"#1D4ED8",border:"1.5px solid #BFDBFE",cursor:"pointer",fontWeight:600,fontSize:13,marginBottom:8,display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+          💊 Full Drug Information & Safety Guide
+        </button>
+      </>)}
+      <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14,marginTop:4}} onClick={onClose}>Close</button>
+    </div>
+  </div>);
+}
+
+// ── DRUG LOOKUP MODAL ────────────────────────────────────────────
+function DrugLookupModal({onClose,flash}){
+  const [query,setQuery]=useState("");
+  const [drug,setDrug]=useState("");
+  const [showInfo,setShowInfo]=useState(false);
+  const search=()=>{if(!query.trim()){flash("Enter a drug name","err");return;}setDrug(query.trim());setShowInfo(true);};
+  return(<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.6)",zIndex:800,display:"flex",alignItems:"flex-end"}} onClick={onClose}>
+    <div style={{background:"#FAFAF8",borderRadius:"24px 24px 0 0",width:"100%",maxHeight:"88vh",overflowY:"auto",padding:"20px 18px 48px"}} onClick={e=>e.stopPropagation()}>
+      <div style={{width:36,height:4,background:"#D6D3CE",borderRadius:99,margin:"0 auto 16px"}}/>
+      <div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:22,fontWeight:400,marginBottom:4}}>💊 Drug Information</div>
+      <div style={{fontSize:12,color:"#78716C",marginBottom:16,lineHeight:1.6}}>Search any drug for safety info, side effects and Nigerian brands.</div>
+      <div style={{display:"flex",gap:8,marginBottom:14}}>
+        <input style={{flex:1,padding:"13px 14px",borderRadius:11,border:"1.5px solid #E0DDD8",fontSize:15,background:"#FAFAF8",outline:"none",boxSizing:"border-box",fontFamily:"inherit",color:"#1A1916"}} placeholder="e.g. Amlodipine, Paracetamol" value={query} onChange={e=>setQuery(e.target.value)} onKeyDown={e=>e.key==="Enter"&&search()}/>
+        <button onClick={search} style={{padding:"13px 18px",borderRadius:11,background:"#0C1A10",color:"#EDE9E0",border:"none",cursor:"pointer",fontWeight:600,fontSize:13,flex:"none"}}>Search</button>
+      </div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:6,marginBottom:16}}>
+        {["Paracetamol","Amoxicillin","Amlodipine","Metformin","Artemether","Lisinopril","Ibuprofen"].map(d=>(
+          <button key={d} onClick={()=>{setQuery(d);setDrug(d);setShowInfo(true);}} style={{padding:"5px 12px",borderRadius:99,background:"#F0FDF4",color:"#14532D",border:"1px solid #BBF7D0",fontSize:12,cursor:"pointer",fontWeight:500}}>{d}</button>
+        ))}
+      </div>
+      {showInfo&&drug&&<DrugInfoModal drug={drug} userMeds={[]} onClose={()=>setShowInfo(false)}/>}
+      <button style={{width:"100%",padding:13,borderRadius:12,background:"#F3F1EC",color:"#57534E",border:"none",cursor:"pointer",fontWeight:500,fontSize:14}} onClick={onClose}>Close</button>
+    </div>
+  </div>);
+}
+
 // ── LANDING ───────────────────────────────────────────────────────
 function Landing({ctx}){
   const [active,setActive]=useState(null);
@@ -1686,7 +1763,24 @@ function PtApp({ctx}){
 }
 
 // ── PATIENT DASHBOARD ─────────────────────────────────────────────
-function PatientDashboard({ctx,recs}){
+
+function simplifyLab(r){
+  const f=r.fields||{};
+  const status=f.resultStatus||"";
+  const sc={Normal:"#16A34A",High:"#DC2626",Low:"#D97706",Positive:"#DC2626",Negative:"#16A34A",Pending:"#78716C",Unknown:"#A8A29E"}[status]||"#78716C";
+  let plain=r.title||f.testCategory||"Lab Test";
+  if(/sugar|hba1c/i.test(f.testCategory||""))plain="Blood Sugar";
+  else if(/malaria/i.test(f.testCategory||""))plain="Malaria Test";
+  else if(/fbc|full blood/i.test(f.testCategory||""))plain="Full Blood Count";
+  else if(/urin/i.test(f.testCategory||""))plain="Urine Test";
+  else if(/lipid/i.test(f.testCategory||""))plain="Cholesterol Check";
+  else if(/typhoid/i.test(f.testCategory||""))plain="Typhoid Test";
+  else if(/faecal|stool/i.test(f.testCategory||""))plain="Stool Test";
+  const plainStatus=status==="High"?"Above normal range":status==="Low"?"Below normal range":status==="Positive"?"Positive result":status==="Negative"?"Negative result":status;
+  return{plain,status,plainStatus,sc};
+}
+
+function PatientDashboard({ctx,recs,showFamily,setShowFamily}){
   const u=ctx.user;
   const [showHMO,setShowHMO]=useState(false);
   const [literacy,setLiteracy]=useState(()=>DB.get("hvng_literacy")||false);
@@ -1742,6 +1836,17 @@ function PatientDashboard({ctx,recs}){
       </div>}
     </div>
 
+    {/* Drug Tools */}
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:14}}>
+      <button onClick={()=>ctx.setModal("drugscan")} style={{background:"#EFF6FF",border:"1px solid #BFDBFE",borderRadius:14,padding:"13px 14px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",width:"100%"}}>
+        <span style={{fontSize:20}}>📷</span>
+        <div style={{textAlign:"left"}}><div style={{fontWeight:600,fontSize:12,color:"#1D4ED8"}}>Scan Drug</div><div style={{fontSize:10,color:"#93C5FD"}}>Photo scanner</div></div>
+      </button>
+      <button onClick={()=>ctx.setModal("druglookup")} style={{background:"#F5F3FF",border:"1px solid #DDD6FE",borderRadius:14,padding:"13px 14px",display:"flex",alignItems:"center",gap:10,cursor:"pointer",width:"100%"}}>
+        <span style={{fontSize:20}}>💊</span>
+        <div style={{textAlign:"left"}}><div style={{fontWeight:600,fontSize:12,color:"#7C3AED"}}>Drug Info</div><div style={{fontSize:10,color:"#C4B5FD"}}>Search & learn</div></div>
+      </button>
+    </div>
     {alerts.length>0&&<div style={{marginBottom:14}}>
       <div style={{fontSize:12,fontWeight:700,color:"#DC2626",marginBottom:8}}>🚨 Important Alerts</div>
       {alerts.map((a,i)=>(<div key={i} style={{background:a.bg,borderLeft:"4px solid "+a.color,borderRadius:"0 12px 12px 0",padding:"10px 14px",display:"flex",gap:12,alignItems:"center",marginBottom:6}}>
@@ -2297,8 +2402,12 @@ function DrView({ctx}){
 }
 
 function DrNewVisit({ctx}){
-  return(<div style={{maxWidth:480,margin:"0 auto"}}>
-    <div style={S.topBar(GB)}><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
+  return(<div style={{maxWidth:480,margin:"0 auto",minHeight:"100vh",background:"#F7F5F2"}}>
+    <div style={{background:"#0E1828",color:"#EDE9E0",padding:"16px 20px",display:"flex",alignItems:"center",gap:12}}>
+      <span style={{cursor:"pointer",fontSize:22,color:"#EDE9E0"}} onClick={()=>ctx.go("dr-view")}>‹</span>
+      <div style={{flex:1,fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:400}}>New Visit</div>
+      <button onClick={()=>ctx.setModal("drugscan")} style={{background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.2)",borderRadius:8,padding:"6px 12px",color:"#EDE9E0",fontSize:12,cursor:"pointer"}}>📷 Scan Drug</button>
+    </div><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
     <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }

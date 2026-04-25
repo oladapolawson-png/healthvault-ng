@@ -2407,10 +2407,11 @@ function DrNewVisit({ctx}){
       <span style={{cursor:"pointer",fontSize:22,color:"#EDE9E0"}} onClick={()=>ctx.go("dr-view")}>‹</span>
       <div style={{flex:1,fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:18,fontWeight:400}}>New Visit</div>
       <button onClick={()=>ctx.setModal("drugscan")} style={{background:"rgba(255,255,255,.1)",border:"1px solid rgba(255,255,255,.2)",borderRadius:8,padding:"6px 12px",color:"#EDE9E0",fontSize:12,cursor:"pointer"}}>📷 Scan Drug</button>
-    </div><span style={{cursor:"pointer",fontSize:22}} onClick={()=>ctx.go("dr-view")}>‹</span><div style={{fontFamily:"'Fraunces',Georgia,serif",fontSize:17,fontWeight:700,flex:1}}>New Visit</div></div>
-    <div style={{padding:"18px 14px 60px"}}><AddRecord ctx={ctx} isDr={true}/></div>
+    </div>
+    <div style={{padding:"18px 16px 80px"}}><AddRecord ctx={ctx} isDr={true}/></div>
   </div>);
 }
+
 
 // ── LAB PORTAL ────────────────────────────────────────────────────
 function LabLogin({ctx}){

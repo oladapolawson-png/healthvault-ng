@@ -2401,6 +2401,55 @@ function DrView({ctx}){
   );
 }
 
+function AddRecord({ctx,isDr}){
+  const [form,setForm]=useState(()=>({careType:"GENERAL",title:"",facility:"",date:new Date().toISOString().slice(0,10),fields:{},attachments:[]}));
+  const upd=(k,v)=>setForm(p=>({...p,[k]:v}));
+  const updFld=(k,v)=>setForm(p=>({...p,fields:{...p.fields,[k]:v}}));
+  const fileRef=useRef();
+  const f=form;const ct=f.careType;
+  const save=()=>{
+    const phone=isDr?(ctx.vp?.phone):(ctx.user?.phone);
+    if(!phone)return ctx.flash("No patient","err");
+    if(!f.date)return ctx.flash("Date required","err");
+    if(!f.title)return ctx.flash("Title required","err");
+    const rec={...f,id:Date.now(),addedBy:isDr?"doctor":"patient",docEmail:isDr?ctx.doc?.email:"",attachments:f.attachments||[]};
+    const recs=DB.get("hvng_records_"+phone)||[];
+    DB.set("hvng_records_"+phone,[...recs,rec]);
+    if(isDr)pushNotif(phone,"Dr. "+(ctx.doc?.name||"Clinician")+" added a record.","visit",ctx.doc?.name||"");
+    ctx.flash("Record saved!");
+    if(isDr)ctx.go("dr-view");else ctx.setSub("timeline");
+  };
+  const CTYPES=["GENERAL","MATERNITY","LAB","CHRONIC","EMERGENCY"];
+  const ta=(label,key)=>(<Fl key={key} label={label}><textarea style={{...S.inp,height:72,resize:"vertical"}} value={f.fields[key]||""} onChange={e=>updFld(key,e.target.value)}/></Fl>);
+  const inp=(label,key,ph)=>(<Fl key={key} label={label}><input style={S.inp} placeholder={ph||""} value={f.fields[key]||""} onChange={e=>updFld(key,e.target.value)}/></Fl>);
+  const vit=(label,key,ph)=>(<Fl key={key} label={label}><input style={S.inp} placeholder={ph} value={f.fields[key]||""} onChange={e=>updFld(key,e.target.value)} maxLength={20}/></Fl>);
+  const SECTIONS={
+    GENERAL:[inp("Complaint","complaint","e.g. Fever, headache"),isDr&&inp("Diagnosis","diagnosis","e.g. Malaria"),isDr&&inp("Treatment","treatment","e.g. Artemether BD x3 days"),<div key="vits" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{[vit("Temp","temp","38.5"),vit("BP","bp","120/80"),vit("Weight kg","weight","66")]}</div>,ta("Notes","notes")],
+    MATERNITY:[inp("Complaint","complaint"),isDr&&inp("Gestational Age","gestationalAge","e.g. 28 weeks"),<div key="vits" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{[vit("BP","bp","118/76"),vit("Weight kg","weight","68")]}</div>,ta("Notes","notes")],
+    LAB:[inp("Tests Run","testsRun","e.g. FBC, Malaria RDT"),ta("Results","results"),ta("Notes","notes")],
+    CHRONIC:[inp("Condition","condition","e.g. Hypertension"),inp("Complaint","complaint"),<div key="vits" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{[vit("BP","bp","148/94"),vit("Weight kg","weight","78"),vit("Blood Glucose","bloodGlucose","7.2")]}</div>,isDr&&inp("Current Meds","currentMeds","e.g. Amlodipine 5mg OD"),ta("Notes","notes")],
+    EMERGENCY:[ta("Complaint","complaint"),<div key="vits" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>{[vit("BP","bp","90/60"),vit("Temp","temp","38"),vit("Pulse","pulse","110"),vit("O2 Sat","o2sat","94%")]}</div>,isDr&&ta("Action Taken","actionTaken"),ta("Notes","notes")],
+  };
+  return(<div>
+    {!isDr&&<div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:16}}><div style={{fontFamily:"'Cormorant Garant',Georgia,serif",fontSize:20,fontWeight:400,color:G}}>Add New Record</div><button onClick={()=>ctx.setSub("timeline")} style={{background:"#F3F1EC",color:"#57534E",border:"none",borderRadius:9,padding:"8px 14px",fontSize:13,fontWeight:600,cursor:"pointer"}}>✕ Cancel</button></div>}
+    {isDr&&<div style={{marginBottom:12,padding:"10px 14px",background:"#EFF6FF",borderRadius:12,fontSize:13,color:"#1E40AF",fontWeight:600}}>Patient: {ctx.vp?.name}</div>}
+    <div style={S.card}>
+      <Fl label="Care Type"><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>{CTYPES.map(c2=>{const info=CARE[c2];const active=ct===c2;return(<div key={c2} onClick={()=>setForm(p=>({...p,careType:c2,fields:{}}))} style={{padding:"9px 12px",borderRadius:10,cursor:"pointer",border:active?"2px solid "+info.color:"2px solid #E5E2DB",background:active?info.bg:"#FAFAF9",display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:18}}>{info.icon}</span><div style={{fontSize:12,fontWeight:active?700:500,color:active?info.color:"#57534E"}}>{info.label}</div></div>);})}</div></Fl>
+      <Fl label="Title *"><input style={S.inp} placeholder={"e.g. "+CARE[ct].label+" visit"} value={f.title} onChange={e=>upd("title",e.target.value)}/></Fl>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        <Fl label="Date *"><input type="date" style={S.inp} value={f.date} onChange={e=>upd("date",e.target.value)}/></Fl>
+        <Fl label="Facility"><input style={S.inp} value={f.facility||""} onChange={e=>upd("facility",e.target.value)}/></Fl>
+      </div>
+      <div style={{borderTop:"1.5px solid #E5E2DB",marginTop:4,paddingTop:14}}>
+        <div style={{fontSize:11,fontWeight:700,color:CARE[ct]?.color||"#555",marginBottom:12,textTransform:"uppercase",letterSpacing:.5}}>{CARE[ct]?.icon} {CARE[ct]?.label} Details</div>
+        {(SECTIONS[ct]||[]).filter(Boolean)}
+      </div>
+      <button style={{...(isDr?S.btnB:S.btnG),marginTop:14}} onClick={save}>SAVE RECORD</button>
+    </div>
+  </div>);
+}
+
+
 function DrNewVisit({ctx}){
   return(<div style={{maxWidth:480,margin:"0 auto",minHeight:"100vh",background:"#F7F5F2"}}>
     <div style={{background:"#0E1828",color:"#EDE9E0",padding:"16px 20px",display:"flex",alignItems:"center",gap:12}}>
